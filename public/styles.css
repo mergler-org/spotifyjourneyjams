@@ -1,0 +1,266 @@
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family:Arial, Helvetica, sans-serif;
+  font-weight: bold;
+}
+
+body.page1 {
+  background-image: url('/static/spotifyjourneyjams.png'); 
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Styles specific to the second page */
+body.page2 {
+  background-image: url('/static/popuptemplate.png'); 
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+body.page3 {
+  background-image: url('/static/emptybackground.png'); 
+  background-repeat: no-repeat;
+  background-position: center;
+  overflow: hidden; /* Hide content beyond the viewport */
+
+}
+
+h1 {
+  font-size: 56px;
+}
+
+h2 {
+  font-size: 48px;
+}
+
+h3 {
+  font-size: 36px;
+}
+
+.container {
+  text-align: center;
+  padding: 40px;
+  border-radius: 20px;
+  width: 700px;
+}
+
+.input-container {
+  margin-bottom: 30px; /* Increased margin bottom */
+}
+
+input {
+  width: 100%;
+  padding: 30px; /* Increased padding */
+  border: 2px solid #ccc; /* Increased border thickness */
+  border-radius: 24px; /* Increased border radius */
+  box-sizing: border-box;
+  background-color: #fff; /* White background color for input */
+  color: #333; /* Text color */
+  font-size: 28px; /* Increased font size */
+}
+
+::placeholder {
+  color: #666; /* Darker color for placeholder text */
+  font-size: 22px; /* Increased font size for placeholder */
+}
+
+button {
+  display: inline-block;
+  padding: 20px 40px; /* Increased padding */
+  font-size: 20px; /* Increased font size */
+  text-decoration: none;
+  color: #fff;
+  border-radius: 40px; /* Increased border radius */
+  transition: background-color 0.3s;
+  border: none;
+  font-weight: bold;
+}
+
+.no {
+  background-color: rgb(233, 43, 18);
+}
+
+.no:hover {
+  background-color: rgb(172, 32, 13);
+}
+
+.button {
+  background-color: #1db954; /* Button color */
+  border-radius: 40px; /* Increased border radius */
+  transition: background-color 0.3s;
+  border: none;
+  font-weight: bold;
+}
+
+.button:hover {
+  background-color: #25a04d; /* Darker color on hover */
+}
+
+.spotify {
+  display: inline-block;
+  margin-top: 30%; /* Adjust as needed to control the distance from the bottom */
+  padding: 10px 20px;
+  font-size: 56px;
+  text-decoration: none;
+  color: #fff;
+  background-color: #1db954;
+  border-radius: 18px;
+  transition: background-color 0.3s;
+}
+
+.spotify:hover {
+  background-color: #25a04d;
+}
+
+#artistSection {
+  text-align: center;
+}
+
+.artist-details {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align items to the start of the cross axis (top) */
+  flex-wrap: wrap;
+  padding-bottom: 10px;
+}
+
+.mainartistimage {
+  flex: 0 0 auto; /* Do not grow or shrink, maintain initial size */
+}
+
+#artistimage {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 3px solid #333;
+  margin-right: 20px;
+  object-fit: cover; /* Ensure the entire image fits within the circle */
+  object-position: center center; /* Center the image within the circle */
+  overflow: hidden; /* Hide anything outside the circle */
+}
+
+
+.song-names {
+  text-align: right;
+  flex: 1 1 auto; /* Grow and shrink equally, take remaining space */
+}
+
+.song-names h3 {
+  margin-bottom: 10px;
+}
+
+.artist-details h3 {
+  margin-bottom: 10px;
+}
+
+.loading-images {
+  position: relative;
+  margin-top: 100%;
+}
+
+#image1 {
+  position: relative;
+  animation: bounce .7s infinite alternate;
+  z-index: 2; /* Set a higher z-index for the van image */
+  left: 10%; /* Move the van image to the right */
+  width: 50%; /* Adjust the width of the van */
+  height: auto; /* Maintain aspect ratio */
+}
+
+@keyframes bounce {
+  0% {
+      transform: translateY(0);
+  }
+  100% {
+      transform: translateY(50px); /* Adjust the final position as needed */
+  }
+}
+
+#image2 {
+  position: relative;
+  z-index: 1; /* Set a lower z-index for the globe image */
+  height: auto; /* Maintain aspect ratio */
+  left: 48%; /* Center the globe image horizontally */
+  transform: translateX(-50%) rotate(360deg); /* Center and add rotation */
+  animation: spin 7s linear infinite; /* Add the spin animation */
+}
+
+@keyframes spin {
+  0% {
+      transform: translateX(-50%) rotate(0deg);
+  }
+  100% {
+      transform: translateX(-50%) rotate(360deg);
+  }
+}
+
+#whitetext {
+  color:#fff
+}
+
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px; /* Adjust the spacing between logos */
+}
+
+#spotifylogo {
+  width: 100px;
+  margin-bottom: 10px; /* Adjust the spacing between logos */
+}
+
+#journeyjamslogo {
+  width: 400px;
+}
+
+.container.playlistcontainer {
+  display: flex;
+  flex-direction: row; /* Make it a row (horizontal) layout */
+  justify-content: space-between; /* Add space between the two columns */
+  align-items: center;
+  width: 900px;
+}
+
+.playlistdata {
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  width: 500px; /* Adjust the width of the playlistdata column */
+}
+
+.playlistembed {
+  flex: 1; /* Let it take the remaining space */
+  padding: 20px;
+}
+
+
+
+/* Add some styling to the playlistdata content */
+.playlistdata h2,
+.playlistdata h3 {
+  margin-bottom: 10px;
+}
+
+.orange {
+  color: #d18700;
+}
+
+
+.purple {
+  color: rgb(72, 0, 72)
+}
+
+p {
+  font-size: 28px;
+}
+
+b {
+  font-weight: bolder;
+}
