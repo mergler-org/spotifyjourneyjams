@@ -169,6 +169,9 @@ app.post("/geocoding", async (req, res) => {
   }
 });
 
+app.get("/music", (req, res) => {
+ res.render("music")
+});
 
 app.get("/form", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "form.html"));
