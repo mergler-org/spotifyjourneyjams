@@ -9,10 +9,7 @@
   <body class="flex h-screen items-center">
     <div class="m-auto bg-blue-500 max-w-2xl mx-auto p-8">
       <h1 class="">Map</h1>
-      <form
-        id="inputs"
-        class="bg-red-400 p-5"
-      >
+      <form id="inputs" class="bg-red-400 p-5">
         <input
           type="text"
           id="startingPoint"
@@ -21,10 +18,8 @@
           class="bg-white text-gray-800 w-full p-2"
           required
         />
-        <div class=" flex justify-center">
-          <p id="swapButton" class="text-2xl text-white">
-            ↕
-          </p>
+        <div class="flex justify-center">
+          <p id="swapButton" class="text-2xl text-white">↕</p>
         </div>
         <input
           type="text"
@@ -34,16 +29,15 @@
           required
           class="bg-white text-gray-800 w-full p-2"
         />
-        
       </form>
       <button
-          id="submit"
-          type="button"
-          onclick="submitForm()"
-          class="bg-green-600 text-white p-2 cursor-pointer"
-        >
-          Submit
-        </button>
+        id="submit"
+        type="button"
+        onclick="submitForm()"
+        class="bg-green-600 text-white p-2 cursor-pointer"
+      >
+        Submit
+      </button>
       <!-- Display geocode and distance data if available -->
       <div id="result" class="mt-4">
         <!-- Content will be dynamically updated here -->
@@ -67,17 +61,14 @@
       async function submitForm() {
         const startingPoint = document.getElementById("startingPoint").value;
         const destination = document.getElementById("destination").value;
-        if (!startingPoint || !destination){
+        if (!startingPoint || !destination) {
           return;
         }
-        if (startingPoint == initialStartingPoint && destination == initialDestination){
-          document.getElementById("submit");
-          if (submit.innerHTML != "Confirm") {
-            submit.innerHTML = "Confirm"
-            submit.setAttribute("onClick", 
-                "location.href='/';");
-            return;
-          }
+        if (
+          startingPoint == initialStartingPoint &&
+          destination == initialDestination
+        ) {
+          return;
         }
         const response = await fetch("/geocoding", {
           method: "POST",
@@ -104,6 +95,7 @@
           <h3 class="font-bold">Distance: ${formatDistance(
             data.distance
           )} miles</h3>
+          <a class="rounded-full bg-green-600 p-3text-white" href="/music">Music</a>
         `;
         const startingPointInput = document.getElementById("startingPoint");
         const destinationInput = document.getElementById("destination");
