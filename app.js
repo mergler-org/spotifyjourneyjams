@@ -111,9 +111,13 @@ app.get("/callback", async (req, res) => {
     res.redirect("/form");
   } catch (error) {
     console.error("Error authenticating with Spotify:", error);
-    return; // Add this line to terminate the function after sending the error response
+    res.redirect("/login"); // Add this line to terminate the function after sending the error response
   }
 });
+
+app.get("/locations", (req, res) => {
+  res.render("location");
+})
 
 app.get("/form", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "form.html"));
