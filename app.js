@@ -134,12 +134,7 @@ app.get("/callback", async (req, res) => {
 });
 
 app.get("/location", (req, res) => {
-  res.render("location", {
-    startingPointData: req.session.startingPointData?.addressFull,
-    destinationData: req.session.destinationData?.addressFull,
-    duration: req.session.duration,
-    distance: req.session.distance,
-  });
+  res.render("location");
 });
 
 // Modify your route to return JSON data
