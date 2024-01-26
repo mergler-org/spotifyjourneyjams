@@ -52,7 +52,7 @@ app.use(
 // spotifyApi authentication middleware
 function spotifyApiMiddleware(req, res, next) {
   if (!req.session.spotifyApi) {
-    res.redirect("/login");
+    return res.redirect("/login");
   } else {
     const spotifyApi = new SpotifyWebApi({
       clientId: clientId,
@@ -70,9 +70,8 @@ exports.spotifyApiMiddleware = spotifyApiMiddleware;
 
 // Add a route to reset session data when visiting the home page
 app.get("/", (req, res) => {
-res.render("index")
+  res.render("index");
 });
-
 
 // login route
 app.get("/login", (req, res) => {
@@ -131,8 +130,14 @@ app.get("/location", spotifyApiMiddleware, (req, res) => {
 app.post("/geocoding", async (req, res) => {
   const { startingPoint, destination } = req.body;
   try {
-    req.session.startingPointData = await geocode(startingPoint, MAPBOX_ACCESS_TOKEN);
-    req.session.destinationData = await geocode(destination, MAPBOX_ACCESS_TOKEN);
+    req.session.startingPointData = await geocode(
+      startingPoint,
+      MAPBOX_ACCESS_TOKEN
+    );
+    req.session.destinationData = await geocode(
+      destination,
+      MAPBOX_ACCESS_TOKEN
+    );
   } catch (error) {
     console.error("Error geocoding \n", error.message);
     res.status(500).json({ error: "Error submitting request" });
@@ -152,7 +157,9 @@ app.post("/geocoding", async (req, res) => {
 
     if (errorMessage) {
       console.error(errorMessage);
-      res.status(500).json({ error: "Error processing the request for driving directions" });
+      res
+        .status(500)
+        .json({ error: "Error processing the request for driving directions" });
       return;
     }
 
@@ -170,11 +177,23 @@ app.post("/geocoding", async (req, res) => {
 });
 
 app.get("/music", spotifyApiMiddleware, (req, res) => {
- res.render("music")
+  if (!req.session.duration || !req.session.distance) {
+    return res.redirect("location");
+  }
+
+  res.render("music", {
+    distance: req.session.distance,
+    duration: req.session.duration,
+  });
 });
 
-app.get("/form", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "form.html"));
+app.post("/search", spotifyApiMiddleware, async (req, res) => {
+  const spotifyApi = req.spotifyApi;
+  const { searchTerm, searchType, creativity } = req.body;
+  if (searchType == "artist") {
+    const startingArtist = await searchArtist(spotifyApi, searchTerm);
+    res.json({ search: startingArtist });
+  }
 });
 
 app.post("/submit", spotifyApiMiddleware, async (req, res) => {

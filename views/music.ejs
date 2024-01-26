@@ -9,9 +9,12 @@
   <body class="flex h-screen items-center">
     <div class="m-auto bg-blue-500 max-w-2xl mx-auto p-8">
       <h1 class="text-3xl font-bold text-white mb-4">Spotify Journey Jams</h1>
+      <h2 class="text-lg text-white mb-4" id="travels"></h2>
       <form id="searchForm" class="bg-red-400 p-5">
         <div class="mb-4">
-          <label class="block text-white text-sm font-semibold mb-2">Search by:</label>
+          <label class="block text-white text-sm font-semibold mb-2"
+            >Search by:</label
+          >
           <div class="flex items-center">
             <label for="searchByArtist" class="mr-2">
               <input
@@ -37,7 +40,11 @@
           </div>
         </div>
         <div class="mb-4">
-          <label for="searchTerm" class="block text-white text-sm font-semibold mb-2">Search Term:</label>
+          <label
+            for="searchTerm"
+            class="block text-white text-sm font-semibold mb-2"
+            >Search Term:</label
+          >
           <input
             type="text"
             id="searchTerm"
@@ -48,7 +55,11 @@
           />
         </div>
         <div class="mb-4">
-          <label for="creativitySlider" class="block text-white text-sm font-semibold mb-2">Creativity:</label>
+          <label
+            for="creativitySlider"
+            class="block text-white text-sm font-semibold mb-2"
+            >Creativity:</label
+          >
           <input
             type="range"
             id="creativitySlider"
@@ -68,8 +79,81 @@
       >
         Search Jams
       </button>
-      <div id="result" class="mt-4">
-      </div>
+      <div id="result" class="mt-4"></div>
     </div>
   </body>
+  <script>
+    let initialSearchType, initialSearchTerm, initialCreativity;
+
+    async function submitForm() {
+      const creativity = document.getElementById("creativitySlider").value;
+      const searchType = document.getElementById("searchByArtist").checked
+        ? "artist"
+        : "song";
+      const searchTerm = document.getElementById("searchTerm").value;
+
+      console.log("Submitting form with:", searchType, searchTerm, creativity);
+
+      console.log("searchType:", searchType);
+      console.log("initialSearchType:", initialSearchType);
+      console.log("searchTerm:", searchTerm);
+      console.log("initialSearchTerm:", initialSearchTerm);
+      console.log("creativity:", creativity);
+      console.log("initialCreativity:", initialCreativity);
+
+        
+        // Compare with initial values and return if no changes
+        if (
+          searchType === initialSearchType &&
+          searchTerm === initialSearchTerm &&
+          creativity === initialCreativity
+        ) {
+          console.log("Form values unchanged. Aborting form submission.");
+          return;
+        }
+      
+
+      const response = await fetch("/search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ searchType, searchTerm, creativity }),
+      });
+      // Update initial values only after a successful submission
+      initialCreativity = creativity;
+      initialSearchTerm = searchTerm;
+      initialSearchType = searchType;
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Received data from server:", data);
+
+        updateResult(data);
+      } else {
+        console.error("Error submitting form:", response.statusText);
+      }
+    }
+
+    function formatDuration(duration) {
+      const hours = Math.floor(duration / 3600);
+      const minutes = Math.floor((duration % 3600) / 60);
+
+      if (hours < 1) {
+        return `${minutes} minutes`;
+      } else {
+        return `${hours} hours and ${minutes} minutes`;
+      }
+    }
+
+    function formatDistance(distance) {
+      return (distance * 0.000621371).toFixed(1);
+    }
+
+    function updateResult(data) {
+      document.getElementById("result").innerHTML = "test"
+
+    }
+    document.getElementById("travels").innerHTML = (formatDistance(<%=distance%>) + " miles    " + formatDuration(<%=duration%>))
+  </script>
 </html>
