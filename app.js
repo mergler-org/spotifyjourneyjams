@@ -70,17 +70,7 @@ exports.spotifyApiMiddleware = spotifyApiMiddleware;
 
 // Add a route to reset session data when visiting the home page
 app.get("/", (req, res) => {
-  // Destroy the entire session
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Error destroying session:", err);
-      res.status(500).send("Error destroying session");
-      return;
-    }
-
-    // Render the index.html template after destroying the session
-    res.render("index");
-  });
+res.render("index")
 });
 
 
@@ -140,7 +130,6 @@ app.get("/location", (req, res) => {
 // Modify your route to return JSON data
 app.post("/geocoding", async (req, res) => {
   const { startingPoint, destination } = req.body;
-  console.log({ startingPoint, destination });
   try {
     req.session.startingPointData = await geocode(startingPoint, MAPBOX_ACCESS_TOKEN);
     req.session.destinationData = await geocode(destination, MAPBOX_ACCESS_TOKEN);
@@ -169,8 +158,8 @@ app.post("/geocoding", async (req, res) => {
 
     // Respond with JSON data
     res.json({
-      startingPointData: req.session.startingPointData,
-      destinationData: req.session.destinationData,
+      startingPointData: req.session.startingPointData.addressFull,
+      destinationData: req.session.destinationData.addressFull,
       duration: req.session.duration,
       distance: req.session.distance,
     });
