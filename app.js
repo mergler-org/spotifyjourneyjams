@@ -66,11 +66,6 @@ function spotifyApiMiddleware(req, res, next) {
 }
 exports.spotifyApiMiddleware = spotifyApiMiddleware;
 
-// Route for the root URL
-app.get("/spotify", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "spotify.html"));
-});
-
 // login route
 app.get("/login", (req, res) => {
   const spotifyApi = new SpotifyWebApi({
