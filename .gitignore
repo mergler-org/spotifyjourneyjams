@@ -1,7 +1,7 @@
 #custom
 test.json
 node_modules/
-output.css
+public/output.css
 
 .code-workspace
 # Byte-compiled / optimized / DLL files
