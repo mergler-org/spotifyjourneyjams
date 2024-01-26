@@ -123,7 +123,7 @@ app.get("/callback", async (req, res) => {
   }
 });
 
-app.get("/location", (req, res) => {
+app.get("/location", spotifyApiMiddleware, (req, res) => {
   res.render("location");
 });
 
@@ -169,7 +169,7 @@ app.post("/geocoding", async (req, res) => {
   }
 });
 
-app.get("/music", (req, res) => {
+app.get("/music", spotifyApiMiddleware, (req, res) => {
  res.render("music")
 });
 
