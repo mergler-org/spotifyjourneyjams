@@ -6,30 +6,56 @@
     <link href="./output.css" rel="stylesheet" />
   </head>
 
-  <body class="">
-    <div class="flex h-screen items-center">
-      <div class="m-auto">
-        <div class="bg-blue-500">
-          <h1 class="">Map</h1>
-          <form id="inputs" class="bg-red-400">
-            <input
-              type="text"
-              id="startingPoint"
-              name="startingPoint"
-              placeholder="Where are you?"
-              class=" bg-white text-gray-800 "
-            />
-          </form>
-          <input
-            type="text"
-            id="destination"
-            name="destination"
-            placeholder="Where are you going?"
-            required
-            class=" bg-white text-gray-800 "
-          />
-        </div>
+  <body class="flex h-screen items-center">
+    <div class="m-auto bg-blue-500 max-w-2xl mx-auto p-8">
+      <h1 class="">Map</h1>
+      <form
+        id="inputs"
+        class="bg-red-400 p-5"
+        method="POST"
+        action="/geocoding"
+      >
+        <!-- Use the startingPointData as the value of the input box -->
+        <input
+          type="text"
+          id="startingPoint"
+          name="startingPoint"
+          placeholder="Where are you?"
+          class="bg-white text-gray-800 w-full mb-4 p-2"
+          value="<%= startingPointData %>"
+        />
+        <!-- Use the destinationData as the value of the input box -->
+        <input
+          type="text"
+          id="destination"
+          name="destination"
+          placeholder="Where are you going?"
+          required
+          class="bg-white text-gray-800 w-full mb-4 p-2"
+          value="<%= destinationData %>"
+        />
+        <input
+          type="submit"
+          value="Submit"
+          class="bg-blue-500 text-white p-2 cursor-pointer"
+        />
+      </form>
+
+      <!-- Display geocode and distance data if available -->
+      <% if (duration && distance) { %>
+      <div class="m-4">
+        <h2 class="font-bold" id="duration">
+          <% const hours = Math.floor(duration / 3600); const minutes =
+          Math.floor((duration % 3600) / 60); if (hours < 1) { %><%= minutes %>
+          minutes<% } else { %><%= hours %> hours and <%= minutes %> minutes<% }
+          %>
+        </h2>
+        <h3 class="font-bold" id="distance">
+          <%= (distance * 0.000621371).toFixed(1) %> miles
+        </h3>
       </div>
+      <% } %>
     </div>
   </body>
+  <script></script>
 </html>
