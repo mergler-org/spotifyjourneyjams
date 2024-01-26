@@ -14,8 +14,8 @@
         class="bg-red-400 p-5"
         method="POST"
         action="/geocoding"
+        onsubmit="return hasFormChanged();"
       >
-        <!-- Use the startingPointData as the value of the input box -->
         <input
           type="text"
           id="startingPoint"
@@ -24,7 +24,6 @@
           class="bg-white text-gray-800 w-full mb-4 p-2"
           value="<%= startingPointData %>"
         />
-        <!-- Use the destinationData as the value of the input box -->
         <input
           type="text"
           id="destination"
@@ -53,9 +52,26 @@
         <h3 class="font-bold" id="distance">
           <%= (distance * 0.000621371).toFixed(1) %> miles
         </h3>
+        <a
+          href="https://google.com"
+          class="rounded-full bg-green-600 text-white"
+          >Music</a
+        >
       </div>
       <% } %>
     </div>
   </body>
-  <script></script>
+  <script>
+    function hasFormChanged() {
+      const startingPointInput = document.getElementById("startingPoint");
+      const destinationInput = document.getElementById("destination");
+      const startingPointDefaultValue = "<%= startingPointData %>";
+      const destinationDefaultValue = "<%= destinationData %>";
+
+      return (
+        startingPointInput.value !== startingPointDefaultValue ||
+        destinationInput.value !== destinationDefaultValue
+      );
+    }
+  </script>
 </html>
