@@ -9,13 +9,8 @@
   <body class="flex h-screen items-center">
     <div class="m-auto bg-blue-500 max-w-2xl mx-auto p-8">
       <h1 class="">Map</h1>
-      <form
-        id="inputs"
-        class="bg-red-400 p-5"
-        method="POST"
-        action="/geocoding"
-        onsubmit="return hasFormChanged();"
-      >
+      <form id="inputs" class="bg-red-400 p-5" method="POST" action="/geocoding">
+        <!-- Use the startingPointData as the value of the input box -->
         <input
           type="text"
           id="startingPoint"
@@ -24,6 +19,7 @@
           class="bg-white text-gray-800 w-full mb-4 p-2"
           value="<%= startingPointData %>"
         />
+        <!-- Use the destinationData as the value of the input box -->
         <input
           type="text"
           id="destination"
@@ -33,45 +29,63 @@
           class="bg-white text-gray-800 w-full mb-4 p-2"
           value="<%= destinationData %>"
         />
-        <input
-          type="submit"
-          value="Submit"
-          class="bg-blue-500 text-white p-2 cursor-pointer"
-        />
+        <button type="button" onclick="submitForm()" class="bg-blue-500 text-white p-2 cursor-pointer">
+          Submit
+        </button>
       </form>
 
       <!-- Display geocode and distance data if available -->
-      <% if (duration && distance) { %>
-      <div class="m-4">
-        <h2 class="font-bold" id="duration">
-          <% const hours = Math.floor(duration / 3600); const minutes =
-          Math.floor((duration % 3600) / 60); if (hours < 1) { %><%= minutes %>
-          minutes<% } else { %><%= hours %> hours and <%= minutes %> minutes<% }
-          %>
-        </h2>
-        <h3 class="font-bold" id="distance">
-          <%= (distance * 0.000621371).toFixed(1) %> miles
-        </h3>
-        <a
-          href="https://google.com"
-          class="rounded-full bg-green-600 text-white"
-          >Music</a
-        >
+      <div id="result" class="mt-4">
+        <!-- Content will be dynamically updated here -->
       </div>
-      <% } %>
     </div>
-  </body>
-  <script>
-    function hasFormChanged() {
-      const startingPointInput = document.getElementById("startingPoint");
-      const destinationInput = document.getElementById("destination");
-      const startingPointDefaultValue = "<%= startingPointData %>";
-      const destinationDefaultValue = "<%= destinationData %>";
 
-      return (
-        startingPointInput.value !== startingPointDefaultValue ||
-        destinationInput.value !== destinationDefaultValue
-      );
-    }
-  </script>
+    <script>
+      async function submitForm() {
+        const startingPoint = document.getElementById("startingPoint").value;
+        const destination = document.getElementById("destination").value;
+
+        const response = await fetch("/geocoding", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ startingPoint, destination }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          updateResult(data);
+        } else {
+          console.error("Error submitting form:", response.statusText);
+        }
+      }
+
+      function updateResult(data) {
+        const resultContainer = document.getElementById("result");
+
+        // Display geocode and distance data
+        resultContainer.innerHTML = `
+          <h2 class="font-bold">Duration: ${formatDuration(data.duration)}</h2>
+          <h3 class="font-bold">Distance: ${formatDistance(data.distance)} miles</h3>
+        `;
+        
+      }
+
+      function formatDuration(duration) {
+        const hours = Math.floor(duration / 3600);
+        const minutes = Math.floor((duration % 3600) / 60);
+
+        if (hours < 1) {
+          return `${minutes} minutes`;
+        } else {
+          return `${hours} hours and ${minutes} minutes`;
+        }
+      }
+
+      function formatDistance(distance) {
+        return (distance * 0.000621371).toFixed(1);
+      }
+    </script>
+  </body>
 </html>

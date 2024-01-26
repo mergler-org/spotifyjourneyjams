@@ -26,6 +26,8 @@ const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
 exports.MAPBOX_ACCESS_TOKEN = MAPBOX_ACCESS_TOKEN;
 
 const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 exports.app = app;
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, "public")));
@@ -140,23 +142,24 @@ app.get("/location", (req, res) => {
   });
 });
 
+// Modify your route to return JSON data
 app.post("/geocoding", async (req, res) => {
   const { startingPoint, destination } = req.body;
-
+  console.log({ startingPoint, destination });
   try {
     req.session.startingPointData = await geocode(startingPoint, MAPBOX_ACCESS_TOKEN);
     req.session.destinationData = await geocode(destination, MAPBOX_ACCESS_TOKEN);
   } catch (error) {
     console.error("Error geocoding \n", error.message);
-    res.status(500).send("Error submitting request");
+    res.status(500).json({ error: "Error submitting request" });
     return;
   }
 
   try {
     // Get driving traffic information
-    const { duration, distance, errorMessage } = await drivingTraffic(
-      req.session.startingPointData?.coordinates,
-      req.session.destinationData?.coordinates,
+    var { duration, distance, errorMessage } = await drivingTraffic(
+      req.session.startingPointData.coordinates,
+      req.session.destinationData.coordinates,
       MAPBOX_ACCESS_TOKEN
     );
 
@@ -169,10 +172,10 @@ app.post("/geocoding", async (req, res) => {
       return;
     }
 
-    // Render the location template with additional data
-    res.render("location", {
-      startingPointData: req.session.startingPointData?.addressFull,
-      destinationData: req.session.destinationData?.addressFull,
+    // Respond with JSON data
+    res.json({
+      startingPointData: req.session.startingPointData,
+      destinationData: req.session.destinationData,
       duration: req.session.duration,
       distance: req.session.distance,
     });
@@ -181,6 +184,7 @@ app.post("/geocoding", async (req, res) => {
     res.status(500).json({ error: "Error during distance calculation" });
   }
 });
+
 
 app.get("/form", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "form.html"));
