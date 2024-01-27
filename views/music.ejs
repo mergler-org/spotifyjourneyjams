@@ -112,7 +112,7 @@
         if (initialSearchType == "artist") {
             for (let i in response) {
                 const name = response[i].name;
-                const imageUrl = response[i].images.length > 0 ? response[i].images[response[i].images.length - 1].url : "https://developer.spotify.com/images/guidelines/design/icon4@2x.png";
+                const imageUrl = response[i].images.length > 0 ? response[i].images[response[i].images.length - 1].url : "spotifyicon.png";
                 const genres = response[i].genres.length > 0 ? response[i].genres.slice(0, 3).join(", ") : "";
                 const URL = response[i].external_urls.spotify;
                 const URI = response[i].id;
