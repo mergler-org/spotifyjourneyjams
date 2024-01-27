@@ -1,6 +1,6 @@
-async function searchArtist(spotifyApi, artistInput, limit=10, offset=0) {
+async function searchArtist(spotifyApi, artistInput, offset=0) {
   try {
-    const results = await spotifyApi.searchArtists(artistInput, { limit: limit, offset:offset});
+    const results = await spotifyApi.searchArtists(artistInput, {limit:10, offset:offset});
     const mainArtist = results.body.artists.items;
     return mainArtist;
   } catch (error) {

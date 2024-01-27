@@ -189,10 +189,12 @@ app.get("/music", spotifyApiMiddleware, (req, res) => {
 
 app.post("/search", spotifyApiMiddleware, async (req, res) => {
   const spotifyApi = req.spotifyApi;
-  const { searchTerm, searchType, creativity } = req.body;
+  const { searchTerm, searchType, creativity, offset } = req.body;
+  req.session.creativity = creativity
   if (searchType == "artist") {
-    const startingArtist = await searchArtist(spotifyApi, searchTerm);
-    res.json({ search: startingArtist });
+    const artistList = await searchArtist(spotifyApi, searchTerm, offset);
+
+    res.json({ search: artistList });
   }
 });
 
