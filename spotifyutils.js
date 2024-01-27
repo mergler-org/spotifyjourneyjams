@@ -1,13 +1,22 @@
 async function searchArtist(spotifyApi, artistInput, offset=0) {
   try {
     const results = await spotifyApi.searchArtists(artistInput, {limit:10, offset:offset});
-    const mainArtist = results.body.artists.items;
-    return mainArtist;
+    const artists = results.body.artists.items;
+    return artists;
   } catch (error) {
-    throw new Error(`Error getting artist info: ${error.message}`);
+    throw new Error(`Error saerching artists: ${error.message}`);
   }
 }
 
+async function searchTracks(spotifyApi, songInput, offset=0) {
+  try {
+    const results = await spotifyApi.searchTracks(songInput, {limit:10, offset: offset})
+    const songs = results.body.tracks.items;
+    return songs;
+  } catch (error) {
+    throw new Error(`Error searching tracks: ${error.message}`);
+  }
+}
 async function topTracks(spotifyApi, artistCode) {
   try {
     const country = "US"; // Replace with the desired country code
@@ -153,4 +162,5 @@ module.exports = {
   makeArtistList,
   pickSongs,
   shuffleArray,
+  searchTracks
 }

@@ -14,6 +14,7 @@ const {
   shuffleArray,
   makeArtistList,
   pickSongs,
+  searchTracks
 } = require("./spotifyutils");
 const fetch = require("node-fetch");
 
@@ -195,6 +196,11 @@ app.post("/search", spotifyApiMiddleware, async (req, res) => {
     const artistList = await searchArtist(spotifyApi, searchTerm, offset);
 
     res.json({ search: artistList });
+  }
+  if (searchType == "song") {
+    const songList = await searchTracks(spotifyApi,searchTerm, offset);
+
+    res.json({search: songList})
   }
 });
 

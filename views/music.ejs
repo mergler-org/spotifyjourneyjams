@@ -124,6 +124,26 @@
             }
         }
 
+        if (initialSearchType == "song") {
+            for (let i in response) {
+                const trackName = response[i].name;
+                const albumImageUrl = response[i].album.images && response[i].album.images.length > 0 ? response[i].album.images[response[i].album.images.length - 1].url : "https://developer.spotify.com/images/guidelines/design/icon4@2x.png";
+                const artistName = response[i].artists[0].name; // Assuming there is only one artist for simplicity
+                const trackURL = response[i].external_urls.spotify;
+
+                // Use URI as the id of the row
+                search += "<tr id='" + response[i].id + "' class='hover:bg-sky-700 cursor-pointer p-10' onclick='handleRowClick(this)'>" +
+                    "<td><a target='_blank' href='" + trackURL + "'>" +
+                    "<div class='p-2'><img src='" + albumImageUrl + "' class='h-16 w-16 object-cover rounded' alt='" + trackName + " - Album'></div></a></td>" +
+                    "<td>" +
+                    "<div class='p-2'>" + trackName + "</div></td>" +
+                    "<td><div class='p-2'>" + artistName + "</div></td>" +
+                    "</tr>";
+            }
+        }
+
+
+
         search += '</table><button id="submit" type="button" onclick="nextPage()" class="bg-green-200 text-black p-2 cursor-pointer" > next </button>';
         results.innerHTML = search;
     }
@@ -156,26 +176,7 @@
     }
 
 
-    function handleRowClick(row) {
-        // Clear previous selection if any
-        const whenHighlighted = "border-4 border-black";
 
-        if (selection) {
-            const previousSelectionRow = document.getElementById(selection);
-            // Split the class names and remove them one by one
-            whenHighlighted.split(' ').forEach(className => {
-                previousSelectionRow.classList.remove(className);
-            });
-        }
-
-        // Set the new selection
-        selection = row.id;
-
-        // Highlight the selected row
-        whenHighlighted.split(' ').forEach(className => {
-            row.classList.add(className);
-        });
-    }
 
 
 
