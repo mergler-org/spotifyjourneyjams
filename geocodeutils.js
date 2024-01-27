@@ -63,7 +63,24 @@ async function drivingTraffic(coordinate1, coordinate2, accessToken) {
   }
 }
 
+function formatDuration(duration) {
+  const hours = Math.floor(duration / 3600);
+  const minutes = Math.floor((duration % 3600) / 60);
+
+  if (hours < 1) {
+    return `${minutes} minutes`;
+  } else {
+    return `${hours} hours and ${minutes} minutes`;
+  }
+}
+
+function formatDistance(distance) {
+  return (distance * 0.000621371).toFixed(1);
+}
+
 module.exports = {
   geocode,
   drivingTraffic,
+  formatDistance,
+  formatDuration
 };

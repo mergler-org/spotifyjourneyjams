@@ -5,7 +5,7 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-const { geocode, drivingTraffic } = require("./geocodeutils");
+const { geocode, drivingTraffic, formatDistance, formatDuration } = require("./geocodeutils");
 const {
   searchArtist,
   topTracks,
@@ -156,6 +156,9 @@ app.post("/geocoding", async (req, res) => {
     req.session.duration = duration;
     req.session.distance = distance;
 
+    duration = formatDuration(duration);
+    distance = formatDistance(distance);
+
     if (errorMessage) {
       console.error(errorMessage);
       res
@@ -168,8 +171,8 @@ app.post("/geocoding", async (req, res) => {
     res.json({
       startingPointData: req.session.startingPointData.addressFull,
       destinationData: req.session.destinationData.addressFull,
-      duration: req.session.duration,
-      distance: req.session.distance,
+      duration: duration,
+      distance: distance,
     });
   } catch (error) {
     console.error("Error during distance calculation:", error);
@@ -182,9 +185,12 @@ app.get("/music", spotifyApiMiddleware, (req, res) => {
     return res.redirect("location");
   }
 
+  duration = formatDuration(req.session.duration);
+  distance = formatDistance(req.session.distance);
+
   res.render("music", {
-    distance: req.session.distance,
-    duration: req.session.duration,
+    distance: distance,
+    duration: duration,
   });
 });
 
@@ -202,6 +208,14 @@ app.post("/search", spotifyApiMiddleware, async (req, res) => {
 
     res.json({search: songList})
   }
+});
+
+app.post("/topSongs", spotifyApiMiddleware, async (req, res) => {
+  const spotifyApi = req.spotifyApi;
+  const { artistId } = req.body;
+    const tracks = await topTracks(spotifyApi, artistId);
+
+    res.json({ tracks: tracks });
 });
 
 app.post("/submit", spotifyApiMiddleware, async (req, res) => {

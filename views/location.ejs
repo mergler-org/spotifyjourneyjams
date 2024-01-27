@@ -91,11 +91,10 @@
 
         // Display geocode and distance data
         resultContainer.innerHTML = `
-          <h2 class="font-bold">Duration: ${formatDuration(data.duration)}</h2>
-          <h3 class="font-bold">Distance: ${formatDistance(
-            data.distance
-          )} miles</h3>
-          <a class="rounded-full bg-green-600 p-3text-white" href="/music">Music</a>
+          <h2 class="font-bold">Duration: ${data.duration}</h2>
+          <h3 class="font-bold">Distance: ${
+            data.distance} miles</h3>
+          <a class="bg-green-600 p-3text-white" href="/music">Music</a>
         `;
         const startingPointInput = document.getElementById("startingPoint");
         const destinationInput = document.getElementById("destination");
@@ -105,20 +104,6 @@
         initialDestination = data.destinationData;
       }
 
-      function formatDuration(duration) {
-        const hours = Math.floor(duration / 3600);
-        const minutes = Math.floor((duration % 3600) / 60);
-
-        if (hours < 1) {
-          return `${minutes} minutes`;
-        } else {
-          return `${hours} hours and ${minutes} minutes`;
-        }
-      }
-
-      function formatDistance(distance) {
-        return (distance * 0.000621371).toFixed(1);
-      }
     </script>
   </body>
 </html>

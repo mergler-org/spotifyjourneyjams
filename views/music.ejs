@@ -10,7 +10,7 @@
 <body class="flex h-screen items-center">
     <div class="m-auto bg-blue-500 max-w-2xl mx-auto p-8">
         <h1 class="text-3xl font-bold text-white mb-4">Spotify Journey Jams</h1>
-        <h2 class="text-lg text-white mb-4" id="travels"></h2>
+        <h2 class="text-lg text-white mb-4" id="travels"><%=distance %> miles <%= duration %></h2>
         <form id="searchForm" class="bg-red-400 p-5">
             <div class="mb-4">
                 <label class="block text-white text-sm font-semibold mb-2">Search by:</label>
@@ -118,11 +118,21 @@
                 const URI = response[i].id;
 
                 // Use URI as the id of the row
-                search += "<tr id='" + URI + "' class='hover:bg-sky-700 cursor-pointer p-10' onclick='handleRowClick(this)'><td><a target='_blank' href='" + URL + "'>" +
+                search += "<tr id='" + URI + "' class='hover:bg-sky-700 cursor-pointer p-10' onclick='handleRowClick(this)'>" +
+                    "<td><a target='_blank' href='" + URL + "'>" +
                     "<div class='p-2'><img src='" + imageUrl + "' class='h-16 w-16 object-cover rounded' alt='" + name + "'></div></a></td>" +
-                    "<td><div class='p-2'>" + name + "</div></td><td><div class='p-2'>" + genres + "</div></td></tr> ";
+                    "<td><div class='p-2'>" + name + "</div></td><td><div class='p-2'>" + genres + "</div></td>" +
+                    "<td><button class='bg-blue-500 text-white p-2 rounded-full' onclick='topSongs(\"" + URI + "\")'>▼</button></td>" +
+                    "</tr>" +
+                    "<tr id='loadingRow" + URI + "' style='display: none;'>" +
+                    "<td colspan='4' class='text-center'><div class='spinner-border text-primary' role='status'></div></td>" +
+                    "</tr>" +
+                    "<tr id='outputRow" + URI + "' style='display: none;'>" +
+                    "<td colspan='4' class='text-center'><div id='output" + URI + "'></div></td>" +
+                    "</tr>";
             }
         }
+
 
         if (initialSearchType == "song") {
             for (let i in response) {
@@ -147,6 +157,43 @@
         search += '</table><button id="submit" type="button" onclick="nextPage()" class="bg-green-200 text-black p-2 cursor-pointer" > next </button>';
         results.innerHTML = search;
     }
+
+    async function topSongs(artistId) {
+        const loadingRow = document.getElementById("loadingRow" + artistId);
+        const outputRow = document.getElementById("outputRow" + artistId);
+        const outputDiv = document.getElementById("output" + artistId);
+
+        loadingRow.style.display = "table-row"; // Show loading row
+        outputRow.style.display = "none"; // Hide output row
+
+        try {
+            // Perform asynchronous operation (replace with actual logic)
+            const response = await fetch("/topSongs", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ artistId }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                // Display output in the output row (replace with actual display logic)
+                outputDiv.innerHTML = JSON.stringify(data, null, 2);
+                outputRow.style.display = "table-row"; // Show output row
+            } else {
+                console.error("Error fetching top songs:", response.statusText);
+            }
+
+        } catch (error) {
+            console.error("Error fetching top songs:", error);
+
+        } finally {
+            loadingRow.style.display = "none"; // Hide loading row after operation
+        }
+    }
+
 
     async function nextPage() {
         offset += 10
@@ -176,11 +223,68 @@
     }
 
 
+    
+
+    // Global function for handling row clicks
+    function handleRowClick(row) {
+        // Clear previous selection if any
+        const whenHighlighted = "border-4 border-black";
+
+        if (selection) {
+            const previousSelectionRow = document.getElementById(selection);
+            // Split the class names and remove them one by one
+            whenHighlighted.split(' ').forEach(className => {
+                previousSelectionRow.classList.remove(className);
+            });
+        }
+
+        // Set the new selection
+        selection = row.id;
+
+        // Highlight the selected row
+        whenHighlighted.split(' ').forEach(className => {
+            row.classList.add(className);
+        });
+    }
+
+    async function topSongs(artistId) {
+        const loadingRow = document.getElementById("loadingRow" + artistId);
+        const outputRow = document.getElementById("outputRow" + artistId);
+        const outputDiv = document.getElementById("output" + artistId);
+        loadingRow.style.display = "table-row"; // Show loading row
+        outputRow.style.display = "none"; // Hide output row
+
+        try {
+            // Perform asynchronous operation (replace with actual logic)
+            const response = await fetch("/topSongs", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ artistId }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                // Display output in the output row (replace with actual display logic)
+                outputDiv.innerHTML = JSON.stringify(data, null, 2);
+                outputRow.style.display = "table-row"; // Show output row
+            } else {
+                console.error("Error fetching top songs:", response.statusText);
+            }
+
+        } catch (error) {
+            console.error("Error fetching top songs:", error);
+
+        } finally {
+            loadingRow.style.display = "none"; // Hide loading row after operation
+        }
+    }
 
 
 
 
-    document.getElementById("travels").innerHTML = (formatDistance(<%=distance %>) + " miles    " + formatDuration(<%=duration %>))
 </script>
 
 </html>
