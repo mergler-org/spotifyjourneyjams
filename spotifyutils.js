@@ -27,10 +27,8 @@ async function topTracks(spotifyApi, artistCode) {
 
     // Return a list of dictionaries with uri and name
     const trackList = topTracksData.map((track) => ({
-      id: track.uri,
+      url: track.external_urls.spotify,
       name: track.name,
-      duration_ms: track.duration_ms,
-      artist: track.artists[0].name,
     }));
 
     return trackList;
