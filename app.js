@@ -1,4 +1,7 @@
 const express = require("express");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+
 const SpotifyWebApi = require("spotify-web-api-node");
 const path = require("path");
 require("dotenv").config();
@@ -28,6 +31,9 @@ const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
 exports.MAPBOX_ACCESS_TOKEN = MAPBOX_ACCESS_TOKEN;
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, { /* options */ });
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 exports.app = app;
@@ -451,6 +457,6 @@ app.get("/debug", spotifyApiMiddleware, (req, res) => {
 });
 
 // Start the server
-app.listen(port, () => {
+httpServer.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
