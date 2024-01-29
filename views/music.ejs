@@ -38,6 +38,9 @@
         <button id="submit" type="button" onclick="submitForm()" class="bg-green-600 text-white p-2 cursor-pointer">
             Search Jams
         </button>
+        <button id="continue" type="button" onclick="makePlaylist()" style="display:none" class="bg-green-600 text-white p-2 cursor-pointer">
+            Make Playlist!
+        </button>
         <div id="result" class="mt-4"></div>
     </div>
 </body>
@@ -105,7 +108,9 @@
 
     let selection = null; // Variable to store the selected URI
     function updateResult(data) {
-        selection = null
+        selection = null 
+        const continueButton = document.getElementById("continue");
+        continueButton.style.display = "none"
         results = document.getElementById("result");
         response = data.search;
         let search = "<table class='border border-collapse'>";
@@ -231,6 +236,7 @@
     function handleRowClick(row) {
         // Clear previous selection if any
         const whenHighlighted = "border-4 border-black";
+        const continueButton = document.getElementById("continue");
 
         if (selection) {
             const previousSelectionRow = document.getElementById(selection);
@@ -247,8 +253,34 @@
         whenHighlighted.split(' ').forEach(className => {
             row.classList.add(className);
         });
+
+        continueButton.style.display = "block"
     }
 
+
+    async function makePlaylist() {
+        if (!selection) {
+            console.error("No selection made. Aborting playlist creation.");
+            return;
+        }
+
+        const response = await fetch("/makePlaylist", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ selection, searchType: initialSearchType, creativity: initialCreativity }),
+        });
+
+        if (response.ok) {
+            console.log("Playlist creation initiated.");
+
+            // Redirect to the loading page
+            window.location.replace('/loading');
+        } else {
+            console.error("Error initiating playlist creation:", response.statusText);
+        }
+    }
 
 </script>
 

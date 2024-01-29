@@ -39,6 +39,33 @@ async function topTracks(spotifyApi, artistCode) {
   }
 }
 
+async function collectSongRecommendations(spotifyApi, kind, id, limit) {
+  let seed;
+  if (kind == 'artist') {
+    seed = "seed_artists";
+  } else if (kind == 'song') {
+    seed = "seed_tracks";
+  } else {
+    throw new Error("Invalid kind");
+  }
+
+  try {
+    const response = await spotifyApi.getRecommendations({ [seed]: id, limit: limit });
+    let recommendationList = response.body.tracks.map((track) => ({
+      track: track.name,
+      duration: track.duration_ms,
+      id: track.id,
+      preview: track.preview_url,
+      url: track.external_urls.spotify,
+      artist: track.artists[0],
+      album: track.album,
+    }))
+    return recommendationList
+  } catch (error) {
+    console.error("Error collecting songs:", error);
+  }
+}
+
 async function similarArtists(spotifyApi, artistCode) {
   try {
     const response = await spotifyApi.getArtistRelatedArtists(artistCode);
@@ -160,5 +187,6 @@ module.exports = {
   makeArtistList,
   pickSongs,
   shuffleArray,
-  searchTracks
+  searchTracks,
+  collectSongRecommendations
 }

@@ -10,6 +10,7 @@ const {
   searchArtist,
   topTracks,
   similarArtists,
+  collectSongRecommendations,
   addTracks,
   shuffleArray,
   makeArtistList,
@@ -218,6 +219,31 @@ app.post("/topSongs", spotifyApiMiddleware, async (req, res) => {
     res.json({ tracks: tracks });
 });
 
+app.post("/makePlaylist", spotifyApiMiddleware, async (req, res) => {
+  const spotifyApi = req.spotifyApi;
+  try {
+    
+    const { selection, searchType, creativity } = req.body;
+    console.log(collectSongRecommendations(spotifyApi, searchType, selection, creativity * 2))
+
+    res.status(200).end();
+  } catch (error) {
+    console.error("Error during playlist creation:", error);
+    res.status(500).json({ error: "Internal Server Error on playlist creation" });
+  }
+});
+
+
+app.get("/loading", spotifyApiMiddleware, async (req, res) => {
+  try {
+    // Render the "loading" view immediately
+    res.render("loading");
+  } catch (error) {
+    console.error("Error during loading:", error);
+    res.status(500).json({ error: "Internal Server Error on loading screen" });
+  }
+});
+
 app.post("/submit", spotifyApiMiddleware, async (req, res) => {
   const { startingPoint, destination, artist } = req.body;
   const spotifyApi = req.spotifyApi;
@@ -255,15 +281,6 @@ app.post("/submit", spotifyApiMiddleware, async (req, res) => {
   }
 });
 
-app.get("/loading", spotifyApiMiddleware, async (req, res) => {
-  try {
-    // Render the "loading" view immediately
-    res.render("loading", { includeScript: true });
-  } catch (error) {
-    console.error("Error during loading:", error);
-    res.status(500).json({ error: "Internal Server Error on loading screen" });
-  }
-});
 
 app.get("/loadingdebug", async (req, res) => {
   try {
