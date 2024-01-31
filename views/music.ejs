@@ -48,6 +48,7 @@
     let initialSearchType, initialSearchTerm, initialCreativity, offset;
 
     async function submitForm() {
+        document.getElementById("submit").disabled = true
         const creativity = document.getElementById("creativitySlider").value;
         const searchType = document.getElementById("searchByArtist").checked
             ? "artist"
@@ -86,6 +87,8 @@
             console.log("Received data from server:", data);
 
             updateResult(data);
+            document.getElementById("submit").disabled = true
+
         } else {
             console.error("Error submitting form:", response.statusText);
         }
