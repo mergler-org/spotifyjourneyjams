@@ -8,7 +8,12 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-const { geocode, drivingTraffic, formatDistance, formatDuration } = require("./geocodeutils");
+const {
+  geocode,
+  drivingTraffic,
+  formatDistance,
+  formatDuration,
+} = require("./geocodeutils");
 const {
   searchArtist,
   topTracks,
@@ -18,7 +23,7 @@ const {
   shuffleArray,
   makeArtistList,
   pickSongs,
-  searchTracks
+  searchTracks,
 } = require("./spotifyutils");
 const fetch = require("node-fetch");
 
@@ -32,7 +37,9 @@ exports.MAPBOX_ACCESS_TOKEN = MAPBOX_ACCESS_TOKEN;
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, { /* options */ });
+const io = new Server(httpServer, {
+  /* options */
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -49,13 +56,13 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(cookieParser());
 
-app.use(
-  session({
-    secret: process.env.SESSIONKEY, // Replace with a secret key for session encryption
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+const sessionMiddleware = session({
+  secret: process.env.SESSIONKEY, // Replace with a secret key for session encryption
+  resave: false,
+  saveUninitialized: true,
+});
+app.use(sessionMiddleware);
+io.engine.use(sessionMiddleware);
 
 // spotifyApi authentication middleware
 function spotifyApiMiddleware(req, res, next) {
@@ -204,50 +211,74 @@ app.get("/music", spotifyApiMiddleware, (req, res) => {
 app.post("/search", spotifyApiMiddleware, async (req, res) => {
   const spotifyApi = req.spotifyApi;
   const { searchTerm, searchType, creativity, offset } = req.body;
-  req.session.creativity = creativity
+  req.session.creativity = creativity;
   if (searchType == "artist") {
     const artistList = await searchArtist(spotifyApi, searchTerm, offset);
 
     res.json({ search: artistList });
   }
   if (searchType == "song") {
-    const songList = await searchTracks(spotifyApi,searchTerm, offset);
+    const songList = await searchTracks(spotifyApi, searchTerm, offset);
 
-    res.json({search: songList})
+    res.json({ search: songList });
   }
 });
 
 app.post("/topSongs", spotifyApiMiddleware, async (req, res) => {
   const spotifyApi = req.spotifyApi;
   const { artistId } = req.body;
-    const tracks = await topTracks(spotifyApi, artistId);
+  const tracks = await topTracks(spotifyApi, artistId);
 
-    res.json({ tracks: tracks });
+  res.json({ tracks: tracks });
 });
 
-app.post("/makePlaylist", spotifyApiMiddleware, async (req, res) => {
+app.post("/saveInfo", spotifyApiMiddleware, async (req, res) => {
   const spotifyApi = req.spotifyApi;
+  const session = req.session;
   try {
-    
     const { selection, searchType, creativity } = req.body;
-    console.log(collectSongRecommendations(spotifyApi, searchType, selection, creativity * 2))
-
+    req.session.selection = selection;
+    req.session.searchType = searchType;
+    req.session.creativity = creativity;
     res.status(200).end();
   } catch (error) {
     console.error("Error during playlist creation:", error);
-    res.status(500).json({ error: "Internal Server Error on playlist creation" });
+    res
+      .status(500)
+      .json({ error: "Internal Server Error on playlist creation" });
   }
 });
 
-
 app.get("/loading", spotifyApiMiddleware, async (req, res) => {
   try {
-    // Render the "loading" view immediately
     res.render("loading");
   } catch (error) {
     console.error("Error during loading:", error);
     res.status(500).json({ error: "Internal Server Error on loading screen" });
   }
+});
+
+app.get("/stream", spotifyApiMiddleware, async (req, res) => {
+  spotifyApi = req.spotifyApi;
+  res.writeHead(200, {
+    Connection: "keep-alive",
+    "Cache-Control": "no-cache",
+    "Content-Type": "text/event-stream",
+  });
+
+  for (let i = 0; i < 5; i++) {
+    const songList = await collectSongRecommendations(
+      spotifyApi,
+      req.session.searchType,
+      req.session.selection,
+      req.session.creativity
+    );
+    const chunk = JSON.stringify({ chunk: songList[0].track });
+    res.write(`data: ${chunk}\n\n`);
+  }
+  res.on("close", () => {
+    res.end();
+  });
 });
 
 app.post("/submit", spotifyApiMiddleware, async (req, res) => {
@@ -286,7 +317,6 @@ app.post("/submit", spotifyApiMiddleware, async (req, res) => {
     res.status(500).send("Error submitting request");
   }
 });
-
 
 app.get("/loadingdebug", async (req, res) => {
   try {

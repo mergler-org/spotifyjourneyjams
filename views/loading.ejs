@@ -2,22 +2,53 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Spotify Journey</title>
-    <link href="./output.css" rel="stylesheet">
-  </head>
+  <meta charset="UTF-8">
+  <title>Spotify Journey</title>
+  <link href="./output.css" rel="stylesheet">
+  <script>
+    (async () => {
+      const response = await fetch("/stream", {
+        headers: {
+          "Accept": "text/event-stream",
+        },
+      });
 
-  <body class="bg-blue-500 h-screen flex items-center justify-center">
-    <div class="m-auto bg-white p-8 max-w-2xl">
-      <h1 class="text-2xl font-bold mb-4">Loading Page</h1>
-      <div class="text-lg mb-6">Your adventure is loading<span class="animate-pulse">...</span></div>
-      <div class="flex items-center justify-center mb-6">
-        <img src="static/van.webp" alt="Van" class="w-20 animate-bounce" />
-      </div>
-      <div class="flex items-center justify-center">
-        <img src="static/earth.webp" alt="Earth" class="w-16 animate-spin" />
-      </div>
+      if (!response.ok) {
+        throw Error(response.statusText());
+      }
+      console.log(response.body)
+      for (const reader = response.body.getReader(); ;) {
+        const { value, done } = await reader.read();
+
+        if (done) {
+          break;
+        }
+
+        const chunk = new TextDecoder().decode(value);
+        const subChunks = chunk.split(/(?<=})\n\ndata: (?={)/);
+
+        for (const subChunk of subChunks) {
+          const payload = subChunk.replace(/^data: /, "");
+          document.body.innerText += JSON.parse(payload).chunk;
+        }
+      }
+    })();
+
+  </script>
+
+</head>
+
+<body class="bg-blue-500 h-screen flex items-center justify-center">
+  <div class="m-auto bg-white p-8 max-w-2xl">
+    <h1 class="text-2xl font-bold mb-4">Loading Page</h1>
+    <div class="text-lg mb-6">Your adventure is loading<span class="animate-pulse">...</span></div>
+    <div class="flex items-center justify-center mb-6">
+      <img src="static/van.webp" alt="Van" class="w-20 animate-bounce" />
     </div>
-  </body>
+    <div class="flex items-center justify-center">
+      <img src="static/earth.webp" alt="Earth" class="w-16 animate-spin" />
+    </div>
+  </div>
+</body>
 
 </html>

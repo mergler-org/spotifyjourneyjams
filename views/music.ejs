@@ -32,7 +32,7 @@
             </div>
             <div class="mb-4">
                 <label for="creativitySlider" class="block text-white text-sm font-semibold mb-2">Creativity:</label>
-                <input type="range" id="creativitySlider" name="creativity" min="0" max="10" value="5" class="w-full" />
+                <input type="range" id="creativitySlider" name="creativity" min="1" max="10" value="5" class="w-full" />
             </div>
         </form>
         <button id="submit" type="button" onclick="submitForm()" class="bg-green-600 text-white p-2 cursor-pointer">
@@ -264,7 +264,7 @@
             return;
         }
 
-        const response = await fetch("/makePlaylist", {
+        const response = await fetch("/saveInfo", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
