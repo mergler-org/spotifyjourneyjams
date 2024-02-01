@@ -5,17 +5,6 @@
   <meta charset="UTF-8">
   <title>Spotify Journey</title>
   <link href="./output.css" rel="stylesheet">
-  <script>
-    const source = new EventSource('/stream')
-    source.addEventListener('message', message => {
-      console.log("recieved: ", message);
-      document.body.innerText += event.data
-
-    });
-    
-
-  </script>
-
 </head>
 
 <body class="bg-blue-500 h-screen flex items-center justify-center">
@@ -28,7 +17,38 @@
     <div class="flex items-center justify-center">
       <img src="static/earth.webp" alt="Earth" class="w-16 animate-spin" />
     </div>
+    <ul id="playlist"></ul>
   </div>
+  
+
+  <script>
+    const source = new EventSource('/stream');
+  
+    source.addEventListener('message', event => {
+      console.log("received: ", event);
+  
+      try {
+        const data = JSON.parse(event.data);
+  
+        if (data && data.track && data.artist && data.duration) {
+          const trackName = data.track;
+          const artist = data.artist;
+          const duration = data.duration;
+  
+          // Add the track, artist, and duration as an <li> item in the body
+          const listItem = document.createElement('li');
+          listItem.textContent = `Track: ${trackName}, Artist: ${artist}, Duration: ${Math.floor(duration / 60000)} minutes`;
+          document.getElementById('playlist').appendChild(listItem);
+        } else {
+          console.error('Invalid data received:', data);
+        }
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+    });
+  </script>
+  
+  
 </body>
 
 </html>

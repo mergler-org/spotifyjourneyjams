@@ -259,27 +259,44 @@ app.get("/loading", spotifyApiMiddleware, async (req, res) => {
 });
 
 app.get("/stream", spotifyApiMiddleware, async (req, res) => {
-  spotifyApi = req.spotifyApi;
+  const spotifyApi = req.spotifyApi;
   res.writeHead(200, {
     Connection: "keep-alive",
     "Cache-Control": "no-cache",
     "Content-Type": "text/event-stream",
   });
+  let playListLength = 0;
+  const duration = req.session.duration * 1000;
 
-  for (let i = 0; i < 5; i++) {
+  while (playListLength < duration) {
+    console.log("getting song recs");
     const songList = await collectSongRecommendations(
       spotifyApi,
       req.session.searchType,
       req.session.selection,
       req.session.creativity
     );
-    const chunk = JSON.stringify({ chunk: songList[0].track });
-    res.write(`data: ${chunk}\n\n`);
+
+    for (const song of songList) {
+      playListLength += song.duration;
+
+      const trackName = song.track;
+      const artist = song.artist.name; // Assuming 'artist' is the property in the song object
+      const songDuration = song.duration;
+
+      const chunk = JSON.stringify({ track: trackName, artist, duration: songDuration });
+      console.log(chunk);
+      res.write(`data: ${chunk}\n\n`);
+    }
+
+    console.log("Remaining ms to fill: ", duration - playListLength);
   }
-  res.on("close", () => {
-    res.end();
-  });
+  //res.on("close", () => {
+    //res.end();
+  //});
 });
+
+
 
 app.post("/submit", spotifyApiMiddleware, async (req, res) => {
   const { startingPoint, destination, artist } = req.body;
