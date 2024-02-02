@@ -94,7 +94,7 @@ function shuffleArray(array) {
   }
 }
 
-async function addTracks(spotifyApi, songIds, playlistUri) {
+async function addToPlaylist(spotifyApi, songIds, playlistUri) {
   const chunkSize = 100;
   const totalChunks = Math.ceil(songIds.length / chunkSize);
 
@@ -183,7 +183,7 @@ module.exports = {
   searchArtist,
   topTracks,
   similarArtists,
-  addTracks,
+  addToPlaylist,
   makeArtistList,
   pickSongs,
   shuffleArray,

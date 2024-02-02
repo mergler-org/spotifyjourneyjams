@@ -21,33 +21,33 @@
   </div>
   
 
-  <script>
-    const source = new EventSource('/stream');
-  
-    source.addEventListener('message', event => {
-      console.log("received: ", event);
-  
-      try {
-        const data = JSON.parse(event.data);
-  
-        if (data && data.track && data.artist && data.duration) {
-          const trackName = data.track;
-          const artist = data.artist;
-          const duration = data.duration;
-  
-          // Add the track, artist, and duration as an <li> item in the body
-          const listItem = document.createElement('li');
-          listItem.textContent = `Track: ${trackName}, Artist: ${artist}, Duration: ${Math.floor(duration / 60000)} minutes`;
-          document.getElementById('playlist').appendChild(listItem);
-        } else {
-          console.error('Invalid data received:', data);
-        }
-      } catch (error) {
-        console.error('Error parsing JSON:', error);
+<script>
+  const source = new EventSource('/stream');
+
+  source.addEventListener('message', event => {
+    console.log("received: ", event);
+
+    try {
+      const data = JSON.parse(event.data);
+
+      if (data.track) {
+        const trackName = data.track;
+        const listItem = document.createElement('li');
+        listItem.textContent = `Adding songs like ${trackName} to your playlist`;
+        document.getElementById('playlist').appendChild(listItem);
+      } 
+      if (data.message) {
+        const message = data.message;
+        const pmessage = document.createElement('li');
+        pmessage.textContent = data.message;
+        document.getElementById('playlist').appendChild(pmessage);
       }
-    });
-  </script>
-  
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+    }
+  });
+</script>
+
   
 </body>
 
