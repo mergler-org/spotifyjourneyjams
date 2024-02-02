@@ -239,7 +239,7 @@ app.post("/saveInfo", spotifyApiMiddleware, async (req, res) => {
     const { selection, searchType, creativity } = req.body;
     req.session.selection = selection;
     req.session.searchType = searchType;
-    req.session.creativity = creativity;
+    req.session.creativity = 100 - (creativity - 1) * ((100 - 3) / (10 - 1));;
     res.status(200).end();
   } catch (error) {
     console.error("Error during playlist creation:", error);
@@ -293,8 +293,9 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
     try {
       let currentList = req.session.songList;
       console.log("Getting  song list");
-      let newSelection = currentList[Math.floor(Math.random() * currentList.length)];
-      console.log(newSelection.id)
+      let newSelection =
+        currentList[Math.floor(Math.random() * currentList.length)];
+      console.log(newSelection.id);
       let songList = await collectSongRecommendations(
         spotifyApi,
         "song",
@@ -321,7 +322,37 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
     });
     res.write(`data: ${chunk}\n\n`);
   }
+  if (!req.session.startPlaylist) {
+    try {
+      const trackIds = req.session.songList.map((track) => "spotify:track:"+track.id);
+      console.log(trackIds)
+      // Create playlist
+      const playlistName = "Road Trip!";
+      const playlistDescription = "Made with love on Spotify Journey";
 
+      // Get the current user's ID
+      const userId = await spotifyApi.getMe();
+
+      // Create the playlist
+      var roadTripPlaylist = await spotifyApi.createPlaylist(playlistName, {
+        description: playlistDescription,
+      });
+
+      
+      // Get the URI of the created playlist
+      var playlistUri = roadTripPlaylist.body.id;
+      req.session.playlist = roadTripPlaylist;
+      req.session.startPlaylist = true;
+      await addToPlaylist(spotifyApi, trackIds, playlistUri);
+      const chunk = JSON.stringify({
+        message: ` Your playlist has been made`,
+      });
+      res.write(`data: ${chunk}\n\n`);
+    } catch (error) {
+      console.error("Error creating playlist:", error.message);
+      // Handle the error as needed
+    }
+  }
   res.on("close", () => {
     res.end();
   });
