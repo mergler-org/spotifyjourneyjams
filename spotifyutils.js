@@ -29,6 +29,7 @@ async function topTracks(spotifyApi, artistCode) {
     const trackList = topTracksData.map((track) => ({
       url: track.external_urls.spotify,
       name: track.name,
+      id: track.id
     }));
 
     return trackList;
@@ -84,13 +85,6 @@ async function similarArtists(spotifyApi, artistCode) {
     throw new Error(
       `Error getting top tracks for ${artistCode}: ${error.message}`
     );
-  }
-}
-
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]]; // Swap elements
   }
 }
 
