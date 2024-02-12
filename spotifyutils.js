@@ -27,9 +27,13 @@ async function topTracks(spotifyApi, artistCode) {
 
     // Return a list of dictionaries with uri and name
     const trackList = topTracksData.map((track) => ({
+      track: track.name,
+      duration: track.duration_ms,
+      id: track.id,
+      preview: track.preview_url,
       url: track.external_urls.spotify,
-      name: track.name,
-      id: track.id
+      artist: track.artists[0],
+      album: track.album,
     }));
 
     return trackList;
@@ -83,7 +87,7 @@ async function similarArtists(spotifyApi, artistCode) {
     return artistList;
   } catch (error) {
     throw new Error(
-      `Error getting top tracks for ${artistCode}: ${error.message}`
+      `Error getting similar artists for ${artistCode}: ${error.message}`
     );
   }
 }
@@ -112,13 +116,13 @@ async function addToPlaylist(spotifyApi, songIds, playlistUri) {
   }
 }
 
-async function makeArtistList(spotifyApi, startingArtist, duration) {
+async function makeArtistList(spotifyApi, startingArtist, howMany) {
   try {
     // make list of artists
-    let baseArtist = startingArtist.id;
+    let baseArtist = startingArtist;
     var artistDictionary = [startingArtist];
     const indicesForSearch = [0];
-    while (artistDictionary.length < Math.floor(duration / 60 / 30) * 2 + 6) {
+    while (artistDictionary.length < howMany) {
       const similarArtistList = await similarArtists(spotifyApi, baseArtist);
       artistDictionary.push(...similarArtistList);
 
@@ -136,7 +140,7 @@ async function makeArtistList(spotifyApi, startingArtist, duration) {
 
 }
 
-async function pickSongs(duration, overshootSeconds, songsToSelectFrom) {
+async function pickSongs(duration, songsToSelectFrom, overshootSeconds=120) {
   const selectedSongs = [];
   var currentDuration = 0;
 

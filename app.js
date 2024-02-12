@@ -375,6 +375,7 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
       req.session.startPlaylist = true;
       await addToPlaylist(spotifyApi, trackIds, playlistUri);
       req.session.playlistComplete = true;
+      console.log("finished making playlist")
     } catch (error) {
       console.error("Error creating playlist:", error.message);
       // Handle the error as needed
