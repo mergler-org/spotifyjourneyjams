@@ -261,15 +261,22 @@ app.post("/saveInfo", spotifyApiMiddleware, async (req, res) => {
       selection,
       searchType,
       duration
-    ) {
+    ) {        
       let songList = [];
+      if (searchType == "artist"){
+        var artistSelection = selection;
+      } else if (searchType == "song"){
+        var artistSelection = await spotifyApi.getTracks([selection, selection]);
+        artistSelection = artistSelection.body.tracks[0].artists[0].id
+      }
+
       if (parameters[1] > 0) {
-        var artistList = await similarArtists(spotifyApi, selection);
+        var artistList = await similarArtists(spotifyApi, artistSelection);
       } else {
         var artistList = [];
       }
       if (parameters[0] == true) {
-        const trackList = await topTracks(spotifyApi, selection);
+        const trackList = await topTracks(spotifyApi, artistSelection);
         songList.push(...trackList);
 
         if (artistList.length > 0) {
