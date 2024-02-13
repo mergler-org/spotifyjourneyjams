@@ -19,8 +19,6 @@
     </div>
     <ul id="playlist"></ul>
   </div>
-
-
   <script>
     const source = new EventSource('/stream');
 
@@ -40,13 +38,27 @@
           pmessage.textContent = `Made and published your playlist!!`;
           document.getElementById('playlist').appendChild(pmessage);
 
-          const playListEmbed = document.createElement('iframe');
-          playListEmbed.src = data.madePlaylist; // Set the src attribute to the URL
-          playListEmbed.width = "600"; // Set width as needed
-          playListEmbed.height = "400"; // Set height as needed
-          playListEmbed.frameborder = "0"; // Remove iframe border
+          const script = document.createElement('script');
+          script.src = 'https://open.spotify.com/embed/iframe-api/v1';
+          script.async = true;
+          document.body.appendChild(script);
 
-          document.getElementById('playlist').appendChild(playListEmbed); // Append the iframe to the playlist container
+          // Step 2: Create an element for the iFrame
+          const embedContainer = document.createElement('div');
+          embedContainer.id = 'embed-iframe';
+          document.getElementById('playlist').appendChild(embedContainer);
+
+          // Step 3: Define the window.onSpotifyIframeApiReady function
+          window.onSpotifyIframeApiReady = (IFrameAPI) => {
+            // Step 4: Create a controller object
+            const options = {
+              uri: data.madePlaylist // Assuming data.madePlaylist contains the Spotify playlist URI
+            };
+            const callback = (EmbedController) => {
+              // You can perform actions with the EmbedController if needed
+            };
+            IFrameAPI.createController(embedContainer, options, callback);
+          }; // Append the iframe to the playlist container
         }
 
       } catch (error) {
