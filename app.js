@@ -24,6 +24,7 @@ const {
   makeArtistList,
   pickSongs,
   searchTracks,
+  collectSongList,
 } = require("./spotifyutils");
 const fetch = require("node-fetch");
 
@@ -234,41 +235,20 @@ app.post("/saveInfo", spotifyApiMiddleware, async (req, res) => {
     const { selection, searchType, creativity } = req.body;
     req.session.selection = selection;
     req.session.searchType = searchType;
-    switch (creativity) {
-      case 1:
-        req.session.creativity = 100;
-        break;
-      case 2:
-        req.session.creativity = 87;
-        break;
-      case 3:
-        req.session.creativity = 74;
-        break;
-      case 4:
-        req.session.creativity = 61;
-        break;
-      case 5:
-        req.session.creativity = 48;
-        break;
-      case 6:
-        req.session.creativity = 35;
-        break;
-      case 7:
-        req.session.creativity = 22;
-        break;
-      case 8:
-        req.session.creativity = 9;
-        break;
-      case 9:
-        req.session.creativity = 4;
-        break;
-      case 10:
-        req.session.creativity = 2;
-        break;
-      default:
-        // Handle any other cases not explicitly defined above
-        break;
-    }
+    const creativityLookupTable = {
+      // whether or not to use top tracks, how many similar artists, and recommended limit
+      1: [true, 0, 0],
+      2: [true, 3, 0],
+      3: [true, 5, 0],
+      4: [true, 15, 0],
+      5: [true, 15, 25],
+      6: [true, 15, 50],
+      7: [true, 10, 50],
+      8: [false, 4, 100],
+      9: [false, 0, 100],
+      10: [false, 0, 20],
+    };
+    req.session.creativityParameters = creativityLookupTable[creativity];
     res.status(200).end();
   } catch (error) {
     console.error("Error during playlist creation:", error);
@@ -289,68 +269,35 @@ app.get("/loading", spotifyApiMiddleware, async (req, res) => {
 
 app.get("/stream", spotifyApiMiddleware, async (req, res) => {
   const spotifyApi = req.spotifyApi;
-  const duration = req.session.duration * 1000;
+  const duration = req.session.duration;
   res.writeHead(200, {
     Connection: "keep-alive",
     "Cache-Control": "no-cache",
     "Content-Type": "text/event-stream",
   });
+
   if (!req.session.startRecommend) {
     req.session.startRecommend = true;
     try {
-      console.log("Getting initial song list");
-      const initialSongList = await collectSongRecommendations(
+      console.log("Getting  song list");
+      const initialSongList = await collectSongList(
         spotifyApi,
-        req.session.searchType,
+        req.session.creativityParameters,
         req.session.selection,
-        req.session.creativity
+        req.session.searchType,
+        duration
       );
-      req.session.songList = initialSongList;
-      let playlistLength = 0;
-      for (const song of initialSongList) {
-        playlistLength += song.duration;
-      }
-      req.session.playlistLength = playlistLength;
-      const chunk = JSON.stringify({ track: initialSongList[0].track });
+      const pickedSongs = await pickSongs(duration, initialSongList);
+      req.session.songList = pickedSongs;
+      const chunk = JSON.stringify({ foundSongs: true });
       res.write(`data: ${chunk}\n\n`);
     } catch (error) {
       console.log("Issue getting recommendations: \n", error);
       res.status(500);
     }
   }
-  while (req.session.playlistLength < duration) {
-    try {
-      let currentList = req.session.songList;
-      console.log("Getting  song list");
-      let newSelection =
-        currentList[Math.floor(Math.random() * currentList.length)];
-      console.log(newSelection.id);
-      let songList = await collectSongRecommendations(
-        spotifyApi,
-        "song",
-        newSelection.id,
-        req.session.creativity
-      );
-      let playlistLength = req.session.playlistLength;
-      for (let song of songList) {
-        playlistLength += song.duration;
-      }
-      req.session.playlistLength = playlistLength;
-      req.session.songList = [...req.session.songList, ...songList];
-      let chunk = JSON.stringify({ track: songList[0].track });
-      res.write(`data: ${chunk}\n\n`);
-    } catch (error) {
-      console.log("Issue continuing recommendations: \n", error);
-    }
-  }
 
-  if (req.session.playlistLength > duration) {
-    const playlistTime = Math.floor(req.session.playlistLength / 60000);
-    const chunk = JSON.stringify({
-      message: ` Your playlist will be approximately ${playlistTime} minutes long`,
-    });
-    res.write(`data: ${chunk}\n\n`);
-  }
+ 
   if (!req.session.startPlaylist) {
     try {
       const trackIds = req.session.songList.map(
@@ -376,6 +323,8 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
       await addToPlaylist(spotifyApi, trackIds, playlistUri);
       req.session.playlistComplete = true;
       console.log("finished making playlist")
+      const chunk = JSON.stringify({ madePlaylist: true });
+      res.write(`data: ${chunk}\n\n`);
     } catch (error) {
       console.error("Error creating playlist:", error.message);
       // Handle the error as needed

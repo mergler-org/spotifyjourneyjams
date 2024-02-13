@@ -30,16 +30,16 @@
     try {
       const data = JSON.parse(event.data);
 
-      if (data.track) {
+      if (data.foundSongs) {
         const trackName = data.track;
         const listItem = document.createElement('li');
-        listItem.textContent = `Adding songs like ${trackName} to your playlist`;
+        listItem.textContent = `Found songs you might like!`;
         document.getElementById('playlist').appendChild(listItem);
       } 
-      if (data.message) {
+      if (data.madePlaylist) {
         const message = data.message;
         const pmessage = document.createElement('li');
-        pmessage.textContent = data.message;
+        pmessage.textContent = `Made and published your playlist!!`;
         document.getElementById('playlist').appendChild(pmessage);
       }
     } catch (error) {
