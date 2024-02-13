@@ -230,66 +230,142 @@ app.post("/topSongs", spotifyApiMiddleware, async (req, res) => {
 app.post("/saveInfo", spotifyApiMiddleware, async (req, res) => {
   const spotifyApi = req.spotifyApi;
   const session = req.session;
+  const duration = req.session.duration;
   try {
     const { selection, searchType, creativity } = req.body;
     req.session.selection = selection;
     req.session.searchType = searchType;
-    
+
     // algortithm time
-    console.log(selection, searchType, creativity)
+    console.log(selection, searchType, creativity);
     const creativityLookupTable = {
-        // whether or not to use top tracks, how many similar artists, and recommended limit
-        1: [true, 0, 0],
-        2: [true, 5, 0],
-        3: [true, 10, 0],
-        4: [true, 15, 0],
-        5: [true, 25, 50],
-        6: [true, 20, 50],
-        7: [true, 10, 100],
-        8: [false, 4, 100],
-        9: [false, 0, 100],
-        10: [false, 0, 20],
-    }
+      // whether or not to use top tracks, how many similar artists, and recommended limit
+      1: [true, 0, 0],
+      2: [true, 3, 0],
+      3: [true, 5, 0],
+      4: [true, 15, 0],
+      5: [true, 15, 25],
+      6: [true, 15, 50],
+      7: [true, 10, 50],
+      8: [false, 4, 100],
+      9: [false, 0, 100],
+      10: [false, 0, 20],
+    };
 
     // if toptracks is true and not enough songs, find more similar artists, if some recommends then find more recommends, if false find only more recommends
-    parameters = creativityLookupTable[creativity]
+    parameters = creativityLookupTable[creativity];
 
-    async function masterAlgorithm(spotifyApi, parameters, selection, searchType) {
-        let songList = [];
-        let artistList;
-        if (parameters[1] > 0) {
-            const getartistList = await similarArtists(spotifyApi, selection,)
-            if (getartistList.length < parameters[1]){
-                artistList = getartistList;
-            } else {
-            artistList = getartistList.slice(0, parameters[1]);
+    async function collectSongList(
+      spotifyApi,
+      parameters,
+      selection,
+      searchType,
+      duration
+    ) {
+      let songList = [];
+      if (parameters[1] > 0) {
+        var artistList = await similarArtists(spotifyApi, selection);
+      } else {
+        var artistList = [];
+      }
+      if (parameters[0] == true) {
+        const trackList = await topTracks(spotifyApi, selection);
+        songList.push(...trackList);
+
+        if (artistList.length > 0) {
+          if (artistList.length <= parameters[1]) {
+            for (i in artistList) {
+              const trackList = await topTracks(spotifyApi, artistList[i].id);
+              songList.push(...trackList);
             }
-        }
-        if (parameters[0] == true) {
-            const trackList = await topTracks(spotifyApi, selection);
-            songList.push(... trackList)
-
-            if (artistList.length > 0){
-                for (i in artistList){
-                    const trackList = await topTracks(spotifyApi, artistList[i].id);
-                    songList.push(... trackList);
-                }
+          } else {
+            for (i in artistList.slice(0, parameters[1])) {
+              const trackList = await topTracks(spotifyApi, artistList[i].id);
+              songList.push(...trackList);
             }
+          }
+        } else {
+          const trackList = await topTracks(spotifyApi, selection);
+          songList.push(...trackList);
         }
-        if (parameters[2] > 0){
-            const recommendedTracks = await collectSongRecommendations(spotifyApi, searchType, selection, parameters[2])
-            songList.push(... recommendedTracks)
-        }
-        for (i in songList) {
-            console.log(songList[i].artist.name + "  ---  " + songList[i].track,songList[i].id,songList[i].duration)
-        }
+      }
+      if (parameters[2] > 0) {
+        const recommendedTracks = await collectSongRecommendations(
+          spotifyApi,
+          searchType,
+          selection,
+          parameters[2]
+        );
+        songList.push(...recommendedTracks);
+      }
 
+      let lengthOfSongs = 0;
+      for (i in songList) {
+        lengthOfSongs += songList[i].duration / 1000;
+      }
+      let iteration = 0;
+
+      while (lengthOfSongs < duration + 300) {
+        iteration += 1;
+        console.log("getting more songs");
+        if (
+          parameters[0] == true &&
+          parameters[1] > 0 &&
+          parameters[1] < artistList.length
+        ) {
+          const trackList = await topTracks(
+            spotifyApi,
+            artistList[parameters[1] + iteration].id
+          );
+          for (i in trackList) {
+            lengthOfSongs += trackList[i].duration / 1000;
+          }
+          songList.push(...trackList);
+        }
+        if (parameters[2] > 0) {
+          const recommendedTracks = await collectSongRecommendations(
+            spotifyApi,
+            searchType,
+            selection,
+            parameters[2]
+          );
+          for (i in recommendedTracks) {
+            lengthOfSongs += recommendedTracks[i].duration / 1000;
+          }
+          songList.push(...recommendedTracks);
+        }
+        if (iteration > 100) {
+          console.log("oh no a long endless loop!!");
+          break;
+        }
+      }
+
+      console.log(lengthOfSongs, duration);
+      return songList;
     }
 
-    await masterAlgorithm(spotifyApi, parameters, selection, searchType)
-    
+    const songList = await collectSongList(
+      spotifyApi,
+      parameters,
+      selection,
+      searchType,
+      duration
+    );
+    const pickedSongs = await pickSongs(duration, songList);
 
-
+    let howLongisit = 0;
+    for (i in pickedSongs) {
+      howLongisit += pickedSongs[i].duration / 1000;
+      console.log(
+        pickedSongs[i].artist.name + "  ---  " + pickedSongs[i].track
+      );
+    }
+    console.log(
+      "playlist is:",
+      howLongisit,
+      "seconds compared to the drive which is",
+      duration
+    );
     //output {creativity: ___, artist -- song..., target duration, actual duration}
 
     res.status(200).end();
@@ -309,8 +385,6 @@ app.get("/loading", spotifyApiMiddleware, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error on loading screen" });
   }
 });
-
-
 
 // Start the server
 app.listen(port, () => {

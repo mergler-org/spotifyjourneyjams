@@ -1,6 +1,9 @@
-async function searchArtist(spotifyApi, artistInput, offset=0) {
+async function searchArtist(spotifyApi, artistInput, offset = 0) {
   try {
-    const results = await spotifyApi.searchArtists(artistInput, {limit:10, offset:offset});
+    const results = await spotifyApi.searchArtists(artistInput, {
+      limit: 10,
+      offset: offset,
+    });
     const artists = results.body.artists.items;
     return artists;
   } catch (error) {
@@ -8,9 +11,12 @@ async function searchArtist(spotifyApi, artistInput, offset=0) {
   }
 }
 
-async function searchTracks(spotifyApi, songInput, offset=0) {
+async function searchTracks(spotifyApi, songInput, offset = 0) {
   try {
-    const results = await spotifyApi.searchTracks(songInput, {limit:10, offset: offset})
+    const results = await spotifyApi.searchTracks(songInput, {
+      limit: 10,
+      offset: offset,
+    });
     const songs = results.body.tracks.items;
     return songs;
   } catch (error) {
@@ -46,16 +52,19 @@ async function topTracks(spotifyApi, artistCode) {
 
 async function collectSongRecommendations(spotifyApi, kind, id, limit) {
   let seed;
-  if (kind == 'artist') {
+  if (kind == "artist") {
     seed = "seed_artists";
-  } else if (kind == 'song') {
+  } else if (kind == "song") {
     seed = "seed_tracks";
   } else {
     throw new Error("Invalid kind");
   }
 
   try {
-    const response = await spotifyApi.getRecommendations({ [seed]: id, limit: limit });
+    const response = await spotifyApi.getRecommendations({
+      [seed]: id,
+      limit: limit,
+    });
     let recommendationList = response.body.tracks.map((track) => ({
       track: track.name,
       duration: track.duration_ms,
@@ -64,8 +73,8 @@ async function collectSongRecommendations(spotifyApi, kind, id, limit) {
       url: track.external_urls.spotify,
       artist: track.artists[0],
       album: track.album,
-    }))
-    return recommendationList
+    }));
+    return recommendationList;
   } catch (error) {
     console.error("Error collecting songs:", error);
   }
@@ -81,7 +90,6 @@ async function similarArtists(spotifyApi, artistCode) {
       name: artist.name,
       genres: artist.genres,
       images: artist.images,
-      
     }));
 
     return artistList;
@@ -103,10 +111,7 @@ async function addToPlaylist(spotifyApi, songIds, playlistUri) {
 
     try {
       // Add songs to the playlist
-      await spotifyApi.addTracksToPlaylist(
-        playlistUri,
-        chunkSongIds
-      );
+      await spotifyApi.addTracksToPlaylist(playlistUri, chunkSongIds);
     } catch (error) {
       console.error(
         `Error adding chunk ${i + 1} to the playlist:`,
@@ -137,22 +142,24 @@ async function makeArtistList(spotifyApi, startingArtist, howMany) {
     console.error("Error making list of artists:", error);
     res.status(500).json({ error: "Error making list of artists" });
   }
-
 }
 
-async function pickSongs(duration, songsToSelectFrom, overshootSeconds=120) {
+async function pickSongs(duration, songsToSelectFrom, overshootSeconds = 300) {
   const selectedSongs = [];
   var currentDuration = 0;
 
   while (currentDuration < duration) {
-    var randomSong = songsToSelectFrom[Math.floor(Math.random() * songsToSelectFrom.length)];
-    songDuration = randomSong.duration_ms / 1000;
+    var randomSong =
+      songsToSelectFrom[Math.floor(Math.random() * songsToSelectFrom.length)];
+    var songDuration = randomSong.duration / 1000;
 
     if (currentDuration + songDuration > duration + overshootSeconds) {
       if (selectedSongs.length > 0) {
         replacingIndex = Math.floor(Math.random() * selectedSongs.length);
         selectedSongs[replacingIndex] =
-          songsToSelectFrom[Math.floor(Math.random() * songsToSelectFrom.length)];
+          songsToSelectFrom[
+            Math.floor(Math.random() * songsToSelectFrom.length)
+          ];
         currentDuration = selectedSongs.reduce(
           (sum, song) => sum + song.duration_ms / 1000,
           0
@@ -164,9 +171,14 @@ async function pickSongs(duration, songsToSelectFrom, overshootSeconds=120) {
       const indexOfRandomSong = songsToSelectFrom.indexOf(randomSong);
       if (indexOfRandomSong !== -1) {
         songsToSelectFrom.splice(indexOfRandomSong, 1);
+
+        if (songsToSelectFrom.length < 1) {
+          break;
+        }
       }
     }
   }
+
   return selectedSongs;
 }
 
@@ -186,5 +198,5 @@ module.exports = {
   pickSongs,
   shuffleArray,
   searchTracks,
-  collectSongRecommendations
-}
+  collectSongRecommendations,
+};
