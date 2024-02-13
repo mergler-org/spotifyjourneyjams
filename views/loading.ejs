@@ -19,36 +19,43 @@
     </div>
     <ul id="playlist"></ul>
   </div>
-  
 
-<script>
-  const source = new EventSource('/stream');
 
-  source.addEventListener('message', event => {
-    console.log("received: ", event);
+  <script>
+    const source = new EventSource('/stream');
 
-    try {
-      const data = JSON.parse(event.data);
+    source.addEventListener('message', event => {
+      console.log("received: ", event);
 
-      if (data.foundSongs) {
-        const trackName = data.track;
-        const listItem = document.createElement('li');
-        listItem.textContent = `Found songs you might like!`;
-        document.getElementById('playlist').appendChild(listItem);
-      } 
-      if (data.madePlaylist) {
-        const message = data.message;
-        const pmessage = document.createElement('li');
-        pmessage.textContent = `Made and published your playlist!!`;
-        document.getElementById('playlist').appendChild(pmessage);
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.foundSongs) {
+          const listItem = document.createElement('li');
+          listItem.textContent = `Found songs you might like!`;
+          document.getElementById('playlist').appendChild(listItem);
+        }
+        if (data.madePlaylist) {
+          const pmessage = document.createElement('li');
+          pmessage.textContent = `Made and published your playlist!!`;
+          document.getElementById('playlist').appendChild(pmessage);
+
+          const playListEmbed = document.createElement('iframe');
+          playListEmbed.src = data.madePlaylist; // Set the src attribute to the URL
+          playListEmbed.width = "600"; // Set width as needed
+          playListEmbed.height = "400"; // Set height as needed
+          playListEmbed.frameborder = "0"; // Remove iframe border
+
+          document.getElementById('playlist').appendChild(playListEmbed); // Append the iframe to the playlist container
+        }
+
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
       }
-    } catch (error) {
-      console.error('Error parsing JSON:', error);
-    }
-  });
-</script>
+    });
+  </script>
 
-  
+
 </body>
 
 </html>

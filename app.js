@@ -323,7 +323,7 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
       await addToPlaylist(spotifyApi, trackIds, playlistUri);
       req.session.playlistComplete = true;
       console.log("finished making playlist")
-      const chunk = JSON.stringify({ madePlaylist: true });
+      const chunk = JSON.stringify({ madePlaylist: roadTripPlaylist.body.external_urls.spotify });
       res.write(`data: ${chunk}\n\n`);
     } catch (error) {
       console.error("Error creating playlist:", error.message);
