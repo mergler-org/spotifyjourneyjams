@@ -2,39 +2,72 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Spotify Journey</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <title>Spotify Journey</title>
+  <link href="./output.css" rel="stylesheet">
 </head>
 
-<body class="">
-    <div class="flex overflow-hidden h-screen items-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-teal-400 via-amber-200 to-violet-600">
-        <div class="m-auto">
-          <div class="my-6 flex items-center justify-center">
-            <p class="mx-8 text-xl font-medium">Made for</p>
-            <a href="https://open.spotify.com"><img src="static/spotifylogo.webp" class="w-56" /></a>          </div>
-          <img src="static/spotifyjourneyjamslogo.png" class="w-108 px-10" />
-          <div class="m-10 h-[30rem] justify-center ">
-            <h3 class="text-center text-lg">Your adventure is loading<span id="loading-dots"></span></h3>
-            <div class="m-10 flex flex-col items-center justify-center">
-              <img src="static/van.webp" class="z-10 -mb-2 ml-[50px] w-56 animate-bounce" />
-              <img src="static/earth.webp" class="w-100 z-0 animate-[spin_4s_linear_infinite]" />
-            </div>
-          </div>
-        </div>
-      </div>
-      <script>
-        setInterval(function () {
-          const loadingDots = document.getElementById('loading-dots');
-          const dotsCount = (new Date().getSeconds() % 3) + 1;
-          loadingDots.textContent = '.'.repeat(dotsCount);
-        }, 750);
-      </script>
-    <% if (includeScript) { %>
-        <script>
-            window.location.replace("/work");
-        </script>
-    <% } %>
+<body class="bg-blue-500 h-screen flex items-center justify-center">
+  <div class="m-auto bg-white p-8 max-w-2xl">
+    <h1 class="text-2xl font-bold mb-4">Loading Page</h1>
+    <div class="text-lg mb-6">Your adventure is loading<span class="animate-pulse">...</span></div>
+    <div class="flex items-center justify-center mb-6">
+      <img src="static/van.webp" alt="Van" class="w-20 animate-bounce" />
+    </div>
+    <div class="flex items-center justify-center">
+      <img src="static/earth.webp" alt="Earth" class="w-16 animate-spin" />
+    </div>
+    <ul id="playlist"></ul>
+  </div>
+  <script>
+    const source = new EventSource('/stream');
+
+    source.addEventListener('message', event => {
+      console.log("received: ", event);
+
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.foundSongs) {
+          const listItem = document.createElement('li');
+          listItem.textContent = `Found songs you might like!`;
+          document.getElementById('playlist').appendChild(listItem);
+        }
+        if (data.madePlaylist) {
+          const pmessage = document.createElement('li');
+          pmessage.textContent = `Made and published your playlist!!`;
+          document.getElementById('playlist').appendChild(pmessage);
+
+          const script = document.createElement('script');
+          script.src = 'https://open.spotify.com/embed/iframe-api/v1';
+          script.async = true;
+          document.body.appendChild(script);
+
+          // Step 2: Create an element for the iFrame
+          const embedContainer = document.createElement('div');
+          embedContainer.id = 'embed-iframe';
+          document.getElementById('playlist').appendChild(embedContainer);
+
+          // Step 3: Define the window.onSpotifyIframeApiReady function
+          window.onSpotifyIframeApiReady = (IFrameAPI) => {
+            // Step 4: Create a controller object
+            const options = {
+              uri: data.madePlaylist // Assuming data.madePlaylist contains the Spotify playlist URI
+            };
+            const callback = (EmbedController) => {
+              // You can perform actions with the EmbedController if needed
+            };
+            IFrameAPI.createController(embedContainer, options, callback);
+          }; // Append the iframe to the playlist container
+        }
+
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+    });
+  </script>
+
+
 </body>
 
 </html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Spotify Journey Jams</title>
+    <link href="./output.css" rel="stylesheet" />
+  </head>
+
+  <body class="flex h-screen items-center">
+    <div class="m-auto bg-blue-500 max-w-2xl mx-auto p-8">
+      <h1 class="">Map</h1>
+      <form id="inputs" class="bg-red-400 p-5">
+        <input
+          type="text"
+          id="startingPoint"
+          name="startingPoint"
+          placeholder="Where are you?"
+          class="bg-white text-gray-800 w-full p-2"
+          required
+        />
+        <div class="flex justify-center">
+          <p id="swapButton" class="text-2xl text-white">↕</p>
+        </div>
+        <input
+          type="text"
+          id="destination"
+          name="destination"
+          placeholder="Where are you going?"
+          required
+          class="bg-white text-gray-800 w-full p-2"
+        />
+      </form>
+      <button
+        id="submit"
+        type="button"
+        onclick="submitForm()"
+        class="bg-green-600 text-white p-2 cursor-pointer"
+      >
+        Submit
+      </button>
+      <!-- Display geocode and distance data if available -->
+      <div id="result" class="mt-4">
+        <!-- Content will be dynamically updated here -->
+      </div>
+    </div>
+
+    <script>
+      let initialStartingPoint;
+      let initialDestination;
+      document
+        .getElementById("swapButton")
+        .addEventListener("click", function () {
+          var startingPointInput = document.getElementById("startingPoint");
+          var destinationInput = document.getElementById("destination");
+
+          var tempValue = startingPointInput.value;
+          startingPointInput.value = destinationInput.value;
+          destinationInput.value = tempValue;
+        });
+
+      async function submitForm() {
+        const startingPoint = document.getElementById("startingPoint").value;
+        const destination = document.getElementById("destination").value;
+        if (!startingPoint || !destination) {
+          return;
+        }
+        if (
+          startingPoint == initialStartingPoint &&
+          destination == initialDestination
+        ) {
+          return;
+        }
+        const response = await fetch("/geocoding", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ startingPoint, destination }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          updateResult(data);
+        } else {
+          console.error("Error submitting form:", response.statusText);
+        }
+      }
+
+      function updateResult(data) {
+        const resultContainer = document.getElementById("result");
+
+        // Display geocode and distance data
+        resultContainer.innerHTML = `
+          <h2 class="font-bold">Duration: ${data.duration}</h2>
+          <h3 class="font-bold">Distance: ${
+            data.distance} miles</h3>
+          <a class="bg-green-600 p-3text-white" href="/music">Music</a>
+        `;
+        const startingPointInput = document.getElementById("startingPoint");
+        const destinationInput = document.getElementById("destination");
+        startingPointInput.value = data.startingPointData;
+        destinationInput.value = data.destinationData;
+        initialStartingPoint = data.startingPointData;
+        initialDestination = data.destinationData;
+      }
+
+    </script>
+  </body>
+</html>

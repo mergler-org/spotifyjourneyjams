@@ -1,13 +1,28 @@
-async function searchArtist(spotifyApi, artistInput) {
+async function searchArtist(spotifyApi, artistInput, offset = 0) {
   try {
-    const results = await spotifyApi.searchArtists(artistInput);
-    const mainArtist = results.body.artists.items[0];
-    return mainArtist;
+    const results = await spotifyApi.searchArtists(artistInput, {
+      limit: 10,
+      offset: offset,
+    });
+    const artists = results.body.artists.items;
+    return artists;
   } catch (error) {
-    throw new Error(`Error getting artist info: ${error.message}`);
+    throw new Error(`Error saerching artists: ${error.message}`);
   }
 }
 
+async function searchTracks(spotifyApi, songInput, offset = 0) {
+  try {
+    const results = await spotifyApi.searchTracks(songInput, {
+      limit: 10,
+      offset: offset,
+    });
+    const songs = results.body.tracks.items;
+    return songs;
+  } catch (error) {
+    throw new Error(`Error searching tracks: ${error.message}`);
+  }
+}
 async function topTracks(spotifyApi, artistCode) {
   try {
     const country = "US"; // Replace with the desired country code
@@ -18,10 +33,13 @@ async function topTracks(spotifyApi, artistCode) {
 
     // Return a list of dictionaries with uri and name
     const trackList = topTracksData.map((track) => ({
-      id: track.uri,
-      name: track.name,
-      duration_ms: track.duration_ms,
-      artist: track.artists[0].name,
+      track: track.name,
+      duration: track.duration_ms,
+      id: track.id,
+      preview: track.preview_url,
+      url: track.external_urls.spotify,
+      artist: track.artists[0],
+      album: track.album,
     }));
 
     return trackList;
@@ -29,6 +47,36 @@ async function topTracks(spotifyApi, artistCode) {
     throw new Error(
       `Error getting top tracks for ${artistCode}: ${error.message}`
     );
+  }
+}
+
+async function collectSongRecommendations(spotifyApi, kind, id, limit) {
+  let seed;
+  if (kind == "artist") {
+    seed = "seed_artists";
+  } else if (kind == "song") {
+    seed = "seed_tracks";
+  } else {
+    throw new Error("Invalid kind");
+  }
+
+  try {
+    const response = await spotifyApi.getRecommendations({
+      [seed]: id,
+      limit: limit,
+    });
+    let recommendationList = response.body.tracks.map((track) => ({
+      track: track.name,
+      duration: track.duration_ms,
+      id: track.id,
+      preview: track.preview_url,
+      url: track.external_urls.spotify,
+      artist: track.artists[0],
+      album: track.album,
+    }));
+    return recommendationList;
+  } catch (error) {
+    console.error("Error collecting songs:", error);
   }
 }
 
@@ -42,25 +90,17 @@ async function similarArtists(spotifyApi, artistCode) {
       name: artist.name,
       genres: artist.genres,
       images: artist.images,
-      
     }));
 
     return artistList;
   } catch (error) {
     throw new Error(
-      `Error getting top tracks for ${artistCode}: ${error.message}`
+      `Error getting similar artists for ${artistCode}: ${error.message}`
     );
   }
 }
 
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]]; // Swap elements
-  }
-}
-
-async function addTracks(spotifyApi, songIds, playlistUri) {
+async function addToPlaylist(spotifyApi, songIds, playlistUri) {
   const chunkSize = 100;
   const totalChunks = Math.ceil(songIds.length / chunkSize);
 
@@ -71,10 +111,7 @@ async function addTracks(spotifyApi, songIds, playlistUri) {
 
     try {
       // Add songs to the playlist
-      await spotifyApi.addTracksToPlaylist(
-        playlistUri,
-        chunkSongIds
-      );
+      await spotifyApi.addTracksToPlaylist(playlistUri, chunkSongIds);
     } catch (error) {
       console.error(
         `Error adding chunk ${i + 1} to the playlist:`,
@@ -84,13 +121,13 @@ async function addTracks(spotifyApi, songIds, playlistUri) {
   }
 }
 
-async function makeArtistList(spotifyApi, startingArtist, duration) {
+async function makeArtistList(spotifyApi, startingArtist, howMany) {
   try {
     // make list of artists
-    let baseArtist = startingArtist.id;
+    let baseArtist = startingArtist;
     var artistDictionary = [startingArtist];
     const indicesForSearch = [0];
-    while (artistDictionary.length < Math.floor(duration / 60 / 30) * 2 + 6) {
+    while (artistDictionary.length < howMany) {
       const similarArtistList = await similarArtists(spotifyApi, baseArtist);
       artistDictionary.push(...similarArtistList);
 
@@ -105,22 +142,24 @@ async function makeArtistList(spotifyApi, startingArtist, duration) {
     console.error("Error making list of artists:", error);
     res.status(500).json({ error: "Error making list of artists" });
   }
-
 }
 
-async function pickSongs(duration, overshootSeconds, songsToSelectFrom) {
+async function pickSongs(duration, songsToSelectFrom, overshootSeconds = 300) {
   const selectedSongs = [];
   var currentDuration = 0;
 
   while (currentDuration < duration) {
-    var randomSong = songsToSelectFrom[Math.floor(Math.random() * songsToSelectFrom.length)];
-    songDuration = randomSong.duration_ms / 1000;
+    var randomSong =
+      songsToSelectFrom[Math.floor(Math.random() * songsToSelectFrom.length)];
+    var songDuration = randomSong.duration / 1000;
 
     if (currentDuration + songDuration > duration + overshootSeconds) {
       if (selectedSongs.length > 0) {
         replacingIndex = Math.floor(Math.random() * selectedSongs.length);
         selectedSongs[replacingIndex] =
-          songsToSelectFrom[Math.floor(Math.random() * songsToSelectFrom.length)];
+          songsToSelectFrom[
+            Math.floor(Math.random() * songsToSelectFrom.length)
+          ];
         currentDuration = selectedSongs.reduce(
           (sum, song) => sum + song.duration_ms / 1000,
           0
@@ -132,9 +171,14 @@ async function pickSongs(duration, overshootSeconds, songsToSelectFrom) {
       const indexOfRandomSong = songsToSelectFrom.indexOf(randomSong);
       if (indexOfRandomSong !== -1) {
         songsToSelectFrom.splice(indexOfRandomSong, 1);
+
+        if (songsToSelectFrom.length < 1) {
+          break;
+        }
       }
     }
   }
+
   return selectedSongs;
 }
 
@@ -145,12 +189,111 @@ function shuffleArray(array) {
   }
 }
 
+async function collectSongList(
+  spotifyApi,
+  parameters,
+  selection,
+  searchType,
+  duration
+) {        
+  let songList = [];
+  if (searchType == "artist"){
+    var artistSelection = selection;
+  } else if (searchType == "song"){
+    var artistSelection = await spotifyApi.getTracks([selection, selection]);
+    artistSelection = artistSelection.body.tracks[0].artists[0].id
+  }
+
+  if (parameters[1] > 0) {
+    var artistList = await similarArtists(spotifyApi, artistSelection);
+  } else {
+    var artistList = [];
+  }
+  if (parameters[0] == true) {
+    const trackList = await topTracks(spotifyApi, artistSelection);
+    songList.push(...trackList);
+
+    if (artistList.length > 0) {
+      if (artistList.length <= parameters[1]) {
+        for (i in artistList) {
+          const trackList = await topTracks(spotifyApi, artistList[i].id);
+          songList.push(...trackList);
+        }
+      } else {
+        for (i in artistList.slice(0, parameters[1])) {
+          const trackList = await topTracks(spotifyApi, artistList[i].id);
+          songList.push(...trackList);
+        }
+      }
+    } else {
+      const trackList = await topTracks(spotifyApi, selection);
+      songList.push(...trackList);
+    }
+  }
+  if (parameters[2] > 0) {
+    const recommendedTracks = await collectSongRecommendations(
+      spotifyApi,
+      searchType,
+      selection,
+      parameters[2]
+    );
+    songList.push(...recommendedTracks);
+  }
+
+  let lengthOfSongs = 0;
+  for (i in songList) {
+    lengthOfSongs += songList[i].duration / 1000;
+  }
+  let iteration = 0;
+
+  while (lengthOfSongs < duration + 300) {
+    iteration += 1;
+    console.log("getting more songs");
+    if (
+      parameters[0] == true &&
+      parameters[1] > 0 &&
+      parameters[1] < artistList.length
+    ) {
+      const trackList = await topTracks(
+        spotifyApi,
+        artistList[parameters[1] + iteration].id
+      );
+      for (i in trackList) {
+        lengthOfSongs += trackList[i].duration / 1000;
+      }
+      songList.push(...trackList);
+    }
+    if (parameters[2] > 0) {
+      const recommendedTracks = await collectSongRecommendations(
+        spotifyApi,
+        searchType,
+        selection,
+        parameters[2]
+      );
+      for (i in recommendedTracks) {
+        lengthOfSongs += recommendedTracks[i].duration / 1000;
+      }
+      songList.push(...recommendedTracks);
+    }
+    if (iteration > 100) {
+      console.log("oh no a long endless loop!!");
+      break;
+    }
+  }
+
+  console.log(lengthOfSongs, duration);
+  return songList;
+}
+
 module.exports = {
   searchArtist,
   topTracks,
   similarArtists,
-  addTracks,
+  addToPlaylist,
   makeArtistList,
   pickSongs,
   shuffleArray,
-}
+  searchTracks,
+  collectSongRecommendations,
+  collectSongList,
+};

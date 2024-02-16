@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Spotify Journey Jams</title>
+    <link href="./output.css" rel="stylesheet" />
+</head>
+
+<body class="flex h-screen items-center">
+    <div class="m-auto bg-blue-500 max-w-2xl mx-auto p-8">
+        <h1 class="text-3xl font-bold text-white mb-4">Spotify Journey Jams</h1>
+        <h2 class="text-lg text-white mb-4" id="travels"><%=distance %> miles <%= duration %></h2>
+        <form id="searchForm" class="bg-red-400 p-5">
+            <div class="mb-4">
+                <label class="block text-white text-sm font-semibold mb-2">Search by:</label>
+                <div class="flex items-center">
+                    <label for="searchByArtist" class="mr-2">
+                        <input type="radio" id="searchByArtist" name="searchType" value="artist" class="mr-1" checked />
+                        Artist
+                    </label>
+                    <label for="searchBySong">
+                        <input type="radio" id="searchBySong" name="searchType" value="song" class="mr-1" />
+                        Song
+                    </label>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label for="searchTerm" class="block text-white text-sm font-semibold mb-2">Search Term:</label>
+                <input type="text" id="searchTerm" name="searchTerm" placeholder="Enter search term"
+                    class="bg-white text-gray-800 w-full p-2" required />
+            </div>
+            <div class="mb-4">
+                <label for="creativitySlider" class="block text-white text-sm font-semibold mb-2">Creativity:</label>
+                <input type="range" id="creativitySlider" name="creativity" min="1" max="10" value="5" class="w-full" />
+            </div>
+        </form>
+        <button id="submit" type="button" onclick="submitForm()" class="bg-green-600 text-white p-2 cursor-pointer">
+            Search Jams
+        </button>
+        <button id="continue" type="button" onclick="makePlaylist()" style="display:none" class="bg-green-600 text-white p-2 cursor-pointer">
+            Make Playlist!
+        </button>
+        <div id="result" class="mt-4"></div>
+    </div>
+</body>
+<script>
+    let initialSearchType, initialSearchTerm, initialCreativity, offset;
+
+    async function submitForm() {
+        document.getElementById("submit").disabled = true
+        const creativity = document.getElementById("creativitySlider").value;
+        const searchType = document.getElementById("searchByArtist").checked
+            ? "artist"
+            : "song";
+        const searchTerm = document.getElementById("searchTerm").value;
+
+        console.log("Submitting form with:", searchType, searchTerm, creativity);
+
+        offset = 0
+
+        // Compare with initial values and return if no changes
+        if (
+            searchType === initialSearchType &&
+            searchTerm === initialSearchTerm &&
+            creativity === initialCreativity
+        ) {
+            console.log("Form values unchanged. Aborting form submission.");
+            return;
+        }
+
+
+        const response = await fetch("/search", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ searchType, searchTerm, creativity, offset }),
+        });
+        // Update initial values only after a successful submission
+        initialCreativity = creativity;
+        initialSearchTerm = searchTerm;
+        initialSearchType = searchType;
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("Received data from server:", data);
+
+            updateResult(data);
+            document.getElementById("submit").disabled = true
+
+        } else {
+            console.error("Error submitting form:", response.statusText);
+        }
+    }
+
+    function formatDuration(duration) {
+        const hours = Math.floor(duration / 3600);
+        const minutes = Math.floor((duration % 3600) / 60);
+
+        if (hours < 1) {
+            return `${minutes} minutes`;
+        } else {
+            return `${hours} hours and ${minutes} minutes`;
+        }
+    }
+
+    function formatDistance(distance) {
+        return (distance * 0.000621371).toFixed(1);
+    }
+
+    let selection = null; // Variable to store the selected URI
+    function updateResult(data) {
+        selection = null 
+        const continueButton = document.getElementById("continue");
+        continueButton.style.display = "none"
+        results = document.getElementById("result");
+        response = data.search;
+        let search = "<table class='border border-collapse'>";
+
+        if (initialSearchType == "artist") {
+            for (let i in response) {
+                const name = response[i].name;
+                const imageUrl = response[i].images.length > 0 ? response[i].images[response[i].images.length - 1].url : "spotifyicon.png";
+                const genres = response[i].genres.length > 0 ? response[i].genres.slice(0, 3).join(", ") : "";
+                const URL = response[i].external_urls.spotify;
+                const URI = response[i].id;
+
+                // Use URI as the id of the row
+                search += "<tr id='" + URI + "' class='hover:bg-sky-700 cursor-pointer p-10' onclick='handleRowClick(this)'>" +
+                    "<td><a target='_blank' href='" + URL + "'>" +
+                    "<div class='p-2'><img src='" + imageUrl + "' class='h-16 w-16 object-cover rounded' alt='" + name + "'></div></a></td>" +
+                    "<td><div class='p-2'>" + name + "</div></td><td><div class='p-2'>" + genres + "</div></td>" +
+                    "<td><button id='findSongs" + URI + "' class='bg-blue-500 text-white p-2 rounded-full' onclick='topSongs(\"" + URI + "\")'>▼</button></td>" +
+                    "</tr>" +
+                    "<tr id='outputRow" + URI + "' style='display: none;'>" +
+                    "<td colspan='4' class='text-center'><div id='output" + URI + "'></div></td>" +
+                    "</tr>";
+            }
+        }
+
+
+        if (initialSearchType == "song") {
+            for (let i in response) {
+                const trackName = response[i].name;
+                const albumImageUrl = response[i].album.images && response[i].album.images.length > 0 ? response[i].album.images[response[i].album.images.length - 1].url : "https://developer.spotify.com/images/guidelines/design/icon4@2x.png";
+                const artistName = response[i].artists[0].name; // Assuming there is only one artist for simplicity
+                const trackURL = response[i].external_urls.spotify;
+
+                // Use URI as the id of the row
+                search += "<tr id='" + response[i].id + "' class='hover:bg-sky-700 cursor-pointer p-10' onclick='handleRowClick(this)'>" +
+                    "<td><a target='_blank' href='" + trackURL + "'>" +
+                    "<div class='p-2'><img src='" + albumImageUrl + "' class='h-16 w-16 object-cover rounded' alt='" + trackName + " - Album'></div></a></td>" +
+                    "<td>" +
+                    "<div class='p-2'>" + trackName + "</div></td>" +
+                    "<td><div class='p-2'>" + artistName + "</div></td>" +
+                    "</tr>";
+            }
+        }
+
+
+
+        search += '</table><button id="submit" type="button" onclick="nextPage()" class="bg-green-200 text-black p-2 cursor-pointer" > next </button>';
+        results.innerHTML = search;
+    }
+
+    async function topSongs(artistId) {
+        const outputRow = document.getElementById("outputRow" + artistId);
+        const outputDiv = document.getElementById("output" + artistId);
+        const button = document.getElementById("findSongs" + artistId);
+
+        button.disabled = true;
+
+        outputRow.style.display = "table-row"; // Hide output row
+
+        try {
+            // Perform asynchronous operation (replace with actual logic)
+            const response = await fetch("/topSongs", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ artistId }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                // Display output in the output row (replace with actual display logic)
+                trackList = data.tracks.slice(0,3);
+            } else {
+                console.error("Error fetching top songs:", response.statusText);
+            }
+
+        } catch (error) {
+            console.error("Error fetching top songs:", error);
+
+        } 
+        for (let i in trackList){
+            const trackName = trackList[i].track;
+            const trackUrl = trackList[i].url;
+
+            song = "<a href='"+trackUrl+ "' target='_blank'><p>" + trackName + "</p></a>"
+            outputDiv.innerHTML += song
+        }
+    }
+
+
+    async function nextPage() {
+        offset += 10
+
+        console.log("Fetching next page with offset", offset);
+        const response = await fetch("/search", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                searchType: initialSearchType,
+                searchTerm: initialSearchTerm,
+                creativity: initialCreativity,
+                offset: offset,  // Set the offset to 10 for the next page
+            }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("Received data from server:", data);
+            updateResult(data);
+        } else {
+            console.error("Error fetching next page:", response.statusText);
+        }
+    }
+
+
+    
+
+    // Global function for handling row clicks
+    function handleRowClick(row) {
+        // Clear previous selection if any
+        const whenHighlighted = "border-4 border-black";
+        const continueButton = document.getElementById("continue");
+
+        if (selection) {
+            const previousSelectionRow = document.getElementById(selection);
+            // Split the class names and remove them one by one
+            whenHighlighted.split(' ').forEach(className => {
+                previousSelectionRow.classList.remove(className);
+            });
+        }
+
+        // Set the new selection
+        selection = row.id;
+
+        // Highlight the selected row
+        whenHighlighted.split(' ').forEach(className => {
+            row.classList.add(className);
+        });
+
+        continueButton.style.display = "block"
+    }
+
+
+    async function makePlaylist() {
+        if (!selection) {
+            console.error("No selection made. Aborting playlist creation.");
+            return;
+        }
+
+        const response = await fetch("/saveInfo", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ selection, searchType: initialSearchType, creativity: initialCreativity }),
+        });
+
+        if (response.ok) {
+            console.log("Playlist creation initiated.");
+
+            // Redirect to the loading page
+            window.location.replace('/loading');
+        } else {
+            console.error("Error initiating playlist creation:", response.statusText);
+        }
+    }
+
+</script>
+
+</html>
