@@ -20,5 +20,5 @@ RUN rm -f /etc/service/nginx/down
 ADD webapp.conf /etc/nginx/sites-enabled/webapp.conf
 RUN mkdir /home/app/webapp
 COPY --chown=app:app . /home/app/webapp
-
 WORKDIR /home/app/webapp
+RUN npm install
