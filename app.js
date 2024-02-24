@@ -1,6 +1,5 @@
 const express = require("express");
 const { createServer } = require("http");
-const { Server } = require("socket.io");
 
 const SpotifyWebApi = require("spotify-web-api-node");
 const path = require("path");
@@ -29,7 +28,7 @@ const {
 const fetch = require("node-fetch");
 
 //Server side constants used
-const port = 3000;
+const port = process.env.PORT;
 const clientId = process.env.CLIENTID;
 const clientSecret = process.env.CLIENTSECRET;
 const redirectUri = process.env.REDIRECTURI; // Change this if needed
