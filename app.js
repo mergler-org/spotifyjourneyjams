@@ -52,6 +52,12 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
 const sessionMiddleware = session({
   secret: process.env.SESSIONKEY, // Replace with a secret key for session encryption
   resave: false,
