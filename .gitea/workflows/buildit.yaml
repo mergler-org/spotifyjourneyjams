@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Docker CE
-          run: sudo apt-get install docker-ce -y
+        run: sudo apt-get install docker-ce -y
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
