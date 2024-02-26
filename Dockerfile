@@ -9,12 +9,6 @@
 
 FROM phusion/passenger-nodejs
 
-# Set correct environment variables.
-#ENV HOME /root
-
-# Use baseimage-docker's init process.
-#CMD ["/sbin/my_init"]
-
 # Enable Nginx and Passenger
 RUN rm -f /etc/service/nginx/down
 ADD webapp.conf /etc/nginx/sites-enabled/webapp.conf
