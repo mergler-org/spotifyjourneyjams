@@ -1,6 +1,5 @@
 const express = require("express");
 const { createServer } = require("http");
-const { Server } = require("socket.io");
 
 const SpotifyWebApi = require("spotify-web-api-node");
 const path = require("path");
@@ -29,7 +28,7 @@ const {
 const fetch = require("node-fetch");
 
 //Server side constants used
-const port = 3000;
+const port = process.env.PORT;
 const clientId = process.env.CLIENTID;
 const clientSecret = process.env.CLIENTSECRET;
 const redirectUri = process.env.REDIRECTURI; // Change this if needed
@@ -53,6 +52,12 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
 const sessionMiddleware = session({
   secret: process.env.SESSIONKEY, // Replace with a secret key for session encryption
   resave: false,
