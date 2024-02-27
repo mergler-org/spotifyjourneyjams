@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Install Node.js
         run: |
-          curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+          curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E sh -
           sudo apt-get install -y nodejs
 
       - name: Checkout code
