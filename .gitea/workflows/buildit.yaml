@@ -6,9 +6,8 @@ on:
 
 jobs:
   build_and_push:
-    runs-on: ubuntu-22.04
+    runs-on: docker
     steps:
-
       - name: Setup Node.js
         run: |
         echo 'deb https://deb.nodesource.com/node_18.x xenial main' > /etc/apt/sources.list.d/nodesource.list
