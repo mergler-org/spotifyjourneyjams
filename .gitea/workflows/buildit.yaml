@@ -6,13 +6,10 @@ on:
 
 jobs:
   build_and_push:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Install Docker CE
-        run: apt-get update && apt-get install docker-ce -y
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
