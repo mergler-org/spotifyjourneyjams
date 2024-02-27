@@ -8,13 +8,12 @@ jobs:
   build_and_push:
     runs-on: docker
     steps:
-      - name: Install Node.js
-        run: |
-          curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E apt-key add -
-          sudo echo "deb https://deb.nodesource.com/node_14.x $(lsb_release -cs) main" > /etc/apt/sources.list.d/nodesource.list
-          sudo echo "deb-src https://deb.nodesource.com/node_14.x $(lsb_release -cs) main" >> /etc/apt/sources.list.d/nodesource.list
-          sudo apt-get update -y
-          sudo apt-get install -y nodejs
+      - name: Install Node.js - Add NodeSource repository
+        run: curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E sh -
+
+      - name: Install Node.js - Install Node.js
+        run: sudo apt-get install -y nodejs
+
 
       - name: Checkout code
         uses: actions/checkout@v2
