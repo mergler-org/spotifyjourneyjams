@@ -11,30 +11,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Determine Ubuntu Version and Docker Version
-        id: docker_info
+      - name: Download Docker Packages
         run: |
-          UBUNTU_VERSION="bullseye" # Assuming you're using Debian bullseye
-          VERSION=$(curl -sSL https://download.docker.com/linux/ubuntu/dists/${UBUNTU_VERSION}/pool/stable/ | grep -oP '(?<=docker-ce_)\d+\.\d+\.\d+(?=_arm64)' | head -n1)
-          echo "::set-output name=UBUNTU_VERSION::${UBUNTU_VERSION}"
-          echo "::set-output name=VERSION::${VERSION}"
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget https://download.docker.com/linux/debian/dists/bullseye/pool/stable/arm64/containerd.io_1.6.28-1_arm64.deb
+          wget https://download.docker.com/linux/debian/dists/bullseye/pool/stable/arm64/docker-ce_25.0.3-1~debian.11~bullseye_arm64.deb
+          wget https://download.docker.com/linux/debian/dists/bullseye/pool/stable/arm64/docker-ce-cli_25.0.3-1~debian.11~bullseye_arm64.deb
+          wget https://download.docker.com/linux/debian/dists/bullseye/pool/stable/arm64/docker-compose-plugin_2.14.1~debian-bullseye_arm64.deb
 
-      - name: Download Docker packages
+      - name: Install Docker Packages
         run: |
-          ARCH="arm64"
-          curl -fsSL "https://download.docker.com/linux/ubuntu/dists/${{ steps.docker_info.outputs.UBUNTU_VERSION }}/pool/stable/containerd.io_${{ steps.docker_info.outputs.VERSION }}_${ARCH}.deb" -o containerd.io.deb
-          curl -fsSL "https://download.docker.com/linux/ubuntu/dists/${{ steps.docker_info.outputs.UBUNTU_VERSION }}/pool/stable/docker-ce_${{ steps.docker_info.outputs.VERSION }}_${ARCH}.deb" -o docker-ce.deb
-          curl -fsSL "https://download.docker.com/linux/ubuntu/dists/${{ steps.docker_info.outputs.UBUNTU_VERSION }}/pool/stable/docker-ce-cli_${{ steps.docker_info.outputs.VERSION }}_${ARCH}.deb" -o docker-ce-cli.deb
-          curl -fsSL "https://download.docker.com/linux/ubuntu/dists/${{ steps.docker_info.outputs.UBUNTU_VERSION }}/pool/stable/docker-buildx-plugin_${{ steps.docker_info.outputs.VERSION }}_${ARCH}.deb" -o docker-buildx-plugin.deb
-          curl -fsSL "https://download.docker.com/linux/ubuntu/dists/${{ steps.docker_info.outputs.UBUNTU_VERSION }}/pool/stable/docker-compose-plugin_${{ steps.docker_info.outputs.VERSION }}_${ARCH}.deb" -o docker-compose-plugin.deb
-
-      - name: Install Docker packages
-        run: |
-          sudo dpkg -i ./containerd.io.deb \
-            ./docker-ce.deb \
-            ./docker-ce-cli.deb \
-            ./docker-buildx-plugin.deb \
-            ./docker-compose-plugin.deb
+          sudo dpkg -i containerd.io_1.6.28-1_arm64.deb \
+                       docker-ce_25.0.3-1~debian.11~bullseye_arm64.deb \
+                       docker-ce-cli_25.0.3-1~debian.11~bullseye_arm64.deb \
+                       docker-compose-plugin_2.14.1~debian-bullseye_arm64.deb
 
 
       - name: Set up Docker Buildx
