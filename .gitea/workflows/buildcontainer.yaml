@@ -1,19 +1,16 @@
 name: Build and Push Docker Image
-
+on:
+  push:
+    branches:
+      - main  # Adjust the branch as needed
 
 jobs:
   build_and_push:
-    runs-on: docker-test
+    runs-on: ubuntu-latest
     steps:
-      - name: Setup Node.js
-        run: |
-        echo 'deb https://deb.nodesource.com/node_18.x xenial main' > /etc/apt/sources.list.d/nodesource.list
-        curl -sL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-        apt-get update -y
-        apt-get install nodejs -y
-
       - name: Checkout code
         uses: actions/checkout@v2
+
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
