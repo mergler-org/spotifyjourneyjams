@@ -14,7 +14,7 @@ jobs:
       - name: Download Docker Packages
         run: |
           apt-get update
-          apt-get install -y wget
+          apt-get install -y wget iptables
           wget https://download.docker.com/linux/debian/dists/bullseye/pool/stable/arm64/containerd.io_1.6.28-1_arm64.deb
           wget https://download.docker.com/linux/debian/dists/bullseye/pool/stable/arm64/docker-ce_25.0.3-1~debian.11~bullseye_arm64.deb
           wget https://download.docker.com/linux/debian/dists/bullseye/pool/stable/arm64/docker-ce-cli_25.0.3-1~debian.11~bullseye_arm64.deb
