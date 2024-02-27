@@ -8,11 +8,10 @@ jobs:
   build_and_push:
     runs-on: docker
     steps:
-
       - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '14'  # Adjust the version as needed
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+          sudo apt-get install -y nodejs
 
       - name: Checkout code
         uses: actions/checkout@v2
