@@ -11,25 +11,32 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Docker's apt repository
+      - name: Determine Ubuntu Version, Architecture, and Docker Version
+        id: docker_info
         run: |
-          apt-get update -y
-          apt-get install -y \
-            ca-certificates \
-            curl
+          UBUNTU_VERSION=$(lsb_release -cs)
+          ARCH=$(dpkg --print-architecture)
+          VERSION=$(curl -sSL https://download.docker.com/linux/ubuntu/dists/${UBUNTU_VERSION}/pool/stable/ | grep -oP '(?<=docker-ce_)\d+\.\d+\.\d+(?=_${ARCH})' | head -n1)
+          echo "::set-output name=UBUNTU_VERSION::${UBUNTU_VERSION}"
+          echo "::set-output name=ARCH::${ARCH}"
+          echo "::set-output name=VERSION::${VERSION}"
 
-          mkdir -p /etc/apt/keyrings
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/docker.gpg
-
-      - name: Add the repository to Apt sources
+      - name: Download Docker packages
         run: |
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+          curl -fsSL "https://download.docker.com/linux/ubuntu/dists/${{ steps.docker_info.outputs.UBUNTU_VERSION }}/pool/stable/containerd.io_${{ steps.docker_info.outputs.VERSION }}_${{ steps.docker_info.outputs.ARCH }}.deb" -o containerd.io.deb
+          curl -fsSL "https://download.docker.com/linux/ubuntu/dists/${{ steps.docker_info.outputs.UBUNTU_VERSION }}/pool/stable/docker-ce_${{ steps.docker_info.outputs.VERSION }}_${{ steps.docker_info.outputs.ARCH }}.deb" -o docker-ce.deb
+          curl -fsSL "https://download.docker.com/linux/ubuntu/dists/${{ steps.docker_info.outputs.UBUNTU_VERSION }}/pool/stable/docker-ce-cli_${{ steps.docker_info.outputs.VERSION }}_${{ steps.docker_info.outputs.ARCH }}.deb" -o docker-ce-cli.deb
+          curl -fsSL "https://download.docker.com/linux/ubuntu/dists/${{ steps.docker_info.outputs.UBUNTU_VERSION }}/pool/stable/docker-buildx-plugin_${{ steps.docker_info.outputs.VERSION }}_${{ steps.docker_info.outputs.ARCH }}.deb" -o docker-buildx-plugin.deb
+          curl -fsSL "https://download.docker.com/linux/ubuntu/dists/${{ steps.docker_info.outputs.UBUNTU_VERSION }}/pool/stable/docker-compose-plugin_${{ steps.docker_info.outputs.VERSION }}_${{ steps.docker_info.outputs.ARCH }}.deb" -o docker-compose-plugin.deb
 
-      - name: Update the APT package index
-        run: apt-get update -y
+      - name: Install Docker packages
+        run: |
+          sudo dpkg -i ./containerd.io.deb \
+            ./docker-ce.deb \
+            ./docker-ce-cli.deb \
+            ./docker-buildx-plugin.deb \
+            ./docker-compose-plugin.deb
 
-      - name: Install Docker CE
-        run: apt-get install docker-ce docker-ce-cli containerd.io -y
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
