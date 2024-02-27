@@ -1,5 +1,5 @@
 # Use a lightweight Node.js Alpine Linux-based image
-FROM node:lts-alpine
+FROM node:latest
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -14,4 +14,4 @@ RUN npm install
 EXPOSE 3000
 
 # Start the application when the container runs
-CMD ["npm", "start"]
+CMD ["node", "app.js"]
