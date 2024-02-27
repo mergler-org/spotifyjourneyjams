@@ -8,13 +8,14 @@ jobs:
   build_and_push:
     runs-on: docker
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
 
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '14'  # Adjust the version as needed
+
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
