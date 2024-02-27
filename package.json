@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx tailwindcss -i ./public/input.css -o ./public/output.css && nodemon app.js"
+    "dev": "npx tailwindcss -i ./public/input.css -o ./public/output.css && nodemon app.js",
+    "start": "node ."
   },
   "author": "spotify journey jams",
   "license": "MIT",
