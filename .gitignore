@@ -1,6 +1,7 @@
 #custom
 test.json
 node_modules/
+compose.yaml
 
 
 .code-workspace
