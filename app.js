@@ -1,6 +1,4 @@
 const express = require("express");
-const { createServer } = require("http");
-
 const SpotifyWebApi = require("spotify-web-api-node");
 const path = require("path");
 require("dotenv").config();
@@ -16,16 +14,11 @@ const {
 const {
   searchArtist,
   topTracks,
-  similarArtists,
-  collectSongRecommendations,
   addToPlaylist,
-  shuffleArray,
-  makeArtistList,
   pickSongs,
   searchTracks,
   collectSongList,
 } = require("./spotifyutils");
-const fetch = require("node-fetch");
 
 //Server side constants used
 const port = process.env.PORT;
