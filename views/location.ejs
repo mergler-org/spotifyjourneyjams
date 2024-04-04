@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <title>Spotify Journey Jams</title>
   <link href="./output.css" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="">
@@ -73,7 +72,7 @@
       resultContainer.innerHTML = `
         <h2 class="m-3 font-bold text-white">Duration: ${data.duration}</h2>
         <h3 class="m-3 font-bold text-white">Distance: ${data.distance} miles</h3>
-        <a class="mt-auto w-full cursor-pointer border-y border-gray-600 p-2 text-center text-xl text-green-400 hover:text-green-200" href="/music"> Music </a>
+        <a class="mt-auto w-full cursor-pointer border-y border-gray-600 p-2 text-center text-xl text-green-400 hover:text-green-200" href="/music"> Pick Music </a>
         `;
       const startingPointInput = document.getElementById("startingPoint");
       const destinationInput = document.getElementById("destination");
