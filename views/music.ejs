@@ -1,47 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <title>Spotify Journey Jams</title>
     <link href="./output.css" rel="stylesheet" />
 </head>
+
 <body class="h-screen items-center">
     <div class="flex h-screen items-center justify-center">
-      <div class="h-1/2 min-h-96 w-2/3 rounded-lg bg-gray-800 shadow-lg min-w-fit">
-        <div class="ml-16 grid grid-cols-2 bg-slate-100 p-6 h-full">
-          <div class="">
-            <form id="searchForm" class="m-4 rounded-lg bg-gray-700 p-5 ">
-              <h1 class="mb-4 text-3xl font-bold text-white">Spotify Journey Jams</h1>
-              <h2 class="mb-4 text-lg text-white" id="travels">7.5 miles 12 minutes</h2>
-              <div class="mb-4">
-                <label class="mb-2 block text-sm font-semibold text-white">Search by:</label>
-                <div class="flex items-center text-white">
-                  <label for="searchByArtist" class="mr-2">
-                    <input type="radio" id="searchByArtist" name="searchType" value="artist" class="mr-1" checked="" />
-                    Artist
-                  </label>
-                  <label for="searchBySong">
-                    <input type="radio" id="searchBySong" name="searchType" value="song" class="mr-1" />
-                    Song
-                  </label>
+        <div class="h-1/2 min-h-96 w-2/3 rounded-lg bg-gray-800 shadow-lg min-w-fit">
+            <div class="ml-16 grid grid-cols-2 bg-slate-100 p-6 h-full">
+                <div class="">
+                    <form id="searchForm" class="m-4 rounded-lg bg-gray-700 p-5 ">
+                        <h1 class="mb-4 text-3xl font-bold text-white">Spotify Journey Jams</h1>
+                        <h2 class="mb-4 text-lg text-white" id="travels"><%= distance %> <%= duration %></h2>
+                        <div class="mb-4">
+                            <label class="mb-2 block text-sm font-semibold text-white">Search by:</label>
+                            <div class="flex items-center text-white">
+                                <label for="searchByArtist" class="mr-2">
+                                    <input type="radio" id="searchByArtist" name="searchType" value="artist"
+                                        class="mr-1" checked="" />
+                                    Artist
+                                </label>
+                                <label for="searchBySong">
+                                    <input type="radio" id="searchBySong" name="searchType" value="song" class="mr-1" />
+                                    Song
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="searchTerm" class="mb-2 block text-sm font-semibold text-white">Search
+                                Term:</label>
+                            <input type="text" id="searchTerm" name="searchTerm" placeholder="Enter search term"
+                                class="w-full rounded-md bg-gray-600 p-2 text-white" required="" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="creativitySlider"
+                                class="mb-2 block text-sm font-semibold text-white">Creativity:</label>
+                            <input type="range" id="creativitySlider" name="creativity" min="1" max="10" value="5"
+                                class="w-full" />
+                        </div>
+                        <button id="submit" type="button" onclick="submitForm()"
+                            class="mt-auto w-full cursor-pointer border-y border-gray-600 p-2 text-xl text-blue-400 hover:text-blue-200">Search
+                            Jams</button>
+                        <button id="continue" type="button" onclick="makePlaylist()" style="display:none"
+                            class="my-auto w-full cursor-pointer border-y border-gray-600 p-2 text-xl text-green-400 hover:text-green-200">Make
+                            Playlist!</button>
+
+                    </form>
+
                 </div>
-              </div>
-              <div class="mb-4">
-                <label for="searchTerm" class="mb-2 block text-sm font-semibold text-white">Search Term:</label>
-                <input type="text" id="searchTerm" name="searchTerm" placeholder="Enter search term" class="w-full rounded-md bg-gray-600 p-2 text-white" required="" />
-              </div>
-              <div class="mb-4">
-                <label for="creativitySlider" class="mb-2 block text-sm font-semibold text-white">Creativity:</label>
-                <input type="range" id="creativitySlider" name="creativity" min="1" max="10" value="5" class="w-full" />
-              </div>
-              <button id="submit" type="button" onclick="submitForm()" class="mt-auto w-full cursor-pointer border-y border-gray-600 p-2 text-xl text-blue-400 hover:text-blue-200">Search Jams</button>
-            </form>
-  
-            <button id="continue" type="button" onclick="makePlaylist()" style="display:none" class="cursor-pointer rounded-md bg-green-600 p-2 text-white hover:bg-green-500">Make Playlist!</button>
-          </div>
-  
-          <div id="result" class="m-2 overflow-auto rounded-lg bg-gray-700 "></div>
-    </div>
+
+                <div id="result" class="m-2 overflow-auto rounded-lg bg-gray-700 "></div>
+            </div>
 </body>
 <script>
     let initialSearchType, initialSearchTerm, initialCreativity, offset;
@@ -110,7 +122,7 @@
 
     let selection = null; // Variable to store the selected URI
     function updateResult(data) {
-        selection = null 
+        selection = null
         const continueButton = document.getElementById("continue");
         continueButton.style.display = "none"
         results = document.getElementById("result");
@@ -186,7 +198,7 @@
                 const data = await response.json();
 
                 // Display output in the output row (replace with actual display logic)
-                trackList = data.tracks.slice(0,3);
+                trackList = data.tracks.slice(0, 3);
             } else {
                 console.error("Error fetching top songs:", response.statusText);
             }
@@ -194,12 +206,12 @@
         } catch (error) {
             console.error("Error fetching top songs:", error);
 
-        } 
-        for (let i in trackList){
+        }
+        for (let i in trackList) {
             const trackName = trackList[i].track;
             const trackUrl = trackList[i].url;
 
-            song = "<a href='"+trackUrl+ "' target='_blank' class='text-blue-400 hover:text-blue-200'><p>" + trackName + "</p></a>"
+            song = "<a href='" + trackUrl + "' target='_blank' class='text-blue-400 hover:text-blue-200'><p>" + trackName + "</p></a>"
             outputDiv.innerHTML += song
         }
     }
@@ -232,12 +244,12 @@
     }
 
 
-    
+
 
     // Global function for handling row clicks
     function handleRowClick(row) {
         // Clear previous selection if any
-        const whenHighlighted = "bg-gray-400";
+        const whenHighlighted = "bg-gray-500";
         const continueButton = document.getElementById("continue");
 
         if (selection) {
@@ -246,6 +258,7 @@
             whenHighlighted.split(' ').forEach(className => {
                 previousSelectionRow.classList.remove(className);
             });
+            previousSelectionRow.classList.add("bg-gray-600")
         }
 
         // Set the new selection
@@ -255,6 +268,8 @@
         whenHighlighted.split(' ').forEach(className => {
             row.classList.add(className);
         });
+        row.classList.remove("bg-gray-600")
+
 
         continueButton.style.display = "block"
     }

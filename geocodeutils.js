@@ -75,7 +75,8 @@ function formatDuration(duration) {
 }
 
 function formatDistance(distance) {
-  return (distance * 0.000621371).toFixed(1);
+  const miles = (distance * 0.000621371).toFixed(1);
+  return `${miles} miles`;
 }
 
 module.exports = {
