@@ -1,88 +1,110 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Spotify Journey Jams</title>
+    <link href="./output.css" rel="stylesheet" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <title>Spotify Journey Jams</title>
-  <link href="./output.css" rel="stylesheet" />
-</head>
-
-<body class="">
-  <div class="flex h-screen items-center justify-center">
-    <div class="w-5/6 h-5/6 max-h-[35rem] flex-initial rounded-lg bg-gray-800 shadow-lg">
-      <div class="ml-16 flex bg-slate-100 p-6 h-full">
-        <form id="inputs" class="m-4 flex w-1/2 flex-col rounded-lg bg-gray-700 p-4">
-          <input type="text" id="startingPoint" name="startingPoint" placeholder="Where are you?"
-            class="mb-2 w-full rounded-md bg-gray-600 p-2 text-white" required />
-          <div class="mb-2 flex justify-center">
-            <p id="swapButton" class="text-4xl text-white">↕</p>
-          </div>
-          <input type="text" id="destination" name="destination" placeholder="Where are you going?" required
-            class="mb-4 w-full rounded-md bg-gray-600 p-2 text-white" />
-          <button id="submit" type="button" onclick="submitForm()"
-            class="mt-auto w-full cursor-pointer border-y border-gray-600 p-2 text-xl text-blue-400 hover:text-blue-200">Submit</button>
-        </form>
-        <div id="result" class="m-4 flex w-1/2 flex-col rounded-lg bg-gray-700 p-4 invisible">
-
+  <body class="">
+    <div class="flex h-screen items-center justify-center">
+      <div
+        class="h-5/6 max-h-[35rem] w-5/6 flex-initial rounded-2xl bg-gray-800 shadow-lg"
+      >
+        <div class="ml-32 flex h-full bg-slate-100 p-6">
+          <form
+            id="inputs"
+            class="m-4 flex w-1/2 flex-col rounded-lg bg-gray-700 p-4"
+          >
+            <input
+              type="text"
+              id="startingPoint"
+              name="startingPoint"
+              placeholder="Where are you?"
+              class="mb-2 w-full rounded-md bg-gray-600 p-2 text-white"
+              required
+            />
+            <div class="mb-2 flex justify-center">
+              <p id="swapButton" class="text-4xl text-white">↕</p>
+            </div>
+            <input
+              type="text"
+              id="destination"
+              name="destination"
+              placeholder="Where are you going?"
+              required
+              class="mb-4 w-full rounded-md bg-gray-600 p-2 text-white"
+            />
+            <button
+              id="submit"
+              type="button"
+              onclick="submitForm()"
+              class="mt-auto w-full cursor-pointer border-y border-gray-600 p-2 text-xl text-blue-400 hover:text-blue-200"
+            >
+              Submit
+            </button>
+          </form>
+          <div
+            id="result"
+            class="invisible m-4 flex w-1/2 flex-col rounded-lg bg-gray-700 p-4"
+          ></div>
         </div>
       </div>
     </div>
-  </div>
-  <script>
-    let initialStartingPoint;
-    let initialDestination;
-    document
-      .getElementById("swapButton")
-      .addEventListener("click", function () {
-        var startingPointInput = document.getElementById("startingPoint");
-        var destinationInput = document.getElementById("destination");
-        var tempValue = startingPointInput.value;
-        startingPointInput.value = destinationInput.value;
-        destinationInput.value = tempValue;
-      });
-    async function submitForm() {
-      const startingPoint = document.getElementById("startingPoint").value;
-      const destination = document.getElementById("destination").value;
-      if (!startingPoint || !destination) {
-        return;
+    <script>
+      let initialStartingPoint;
+      let initialDestination;
+      document
+        .getElementById("swapButton")
+        .addEventListener("click", function () {
+          var startingPointInput = document.getElementById("startingPoint");
+          var destinationInput = document.getElementById("destination");
+          var tempValue = startingPointInput.value;
+          startingPointInput.value = destinationInput.value;
+          destinationInput.value = tempValue;
+        });
+      async function submitForm() {
+        const startingPoint = document.getElementById("startingPoint").value;
+        const destination = document.getElementById("destination").value;
+        if (!startingPoint || !destination) {
+          return;
+        }
+        if (
+          startingPoint == initialStartingPoint &&
+          destination == initialDestination
+        ) {
+          return;
+        }
+        const response = await fetch("/geocoding", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ startingPoint, destination }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          updateResult(data);
+        } else {
+          console.error("Error submitting form:", response.statusText);
+        }
       }
-      if (
-        startingPoint == initialStartingPoint &&
-        destination == initialDestination
-      ) {
-        return;
-      }
-      const response = await fetch("/geocoding", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ startingPoint, destination }),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        updateResult(data);
-      } else {
-        console.error("Error submitting form:", response.statusText);
-      }
-    }
-    function updateResult(data) {
-      const resultContainer = document.getElementById("result");
-      // Display geocode and distance data
-      resultContainer.innerHTML = `
+      function updateResult(data) {
+        const resultContainer = document.getElementById("result");
+        // Display geocode and distance data
+        resultContainer.innerHTML = `
         <h2 class="m-3 font-bold text-white">Duration: ${data.duration}</h2>
         <h3 class="m-3 font-bold text-white">Distance: ${data.distance} miles</h3>
         <a class="mt-auto w-full cursor-pointer border-y border-gray-600 p-2 text-center text-xl text-green-400 hover:text-green-200" href="/music"> Pick Music </a>
         `;
-      const startingPointInput = document.getElementById("startingPoint");
-      const destinationInput = document.getElementById("destination");
-      startingPointInput.value = data.startingPointData;
-      destinationInput.value = data.destinationData;
-      initialStartingPoint = data.startingPointData;
-      initialDestination = data.destinationData;
-      resultContainer.classList.remove("invisible")
-    }
-  </script>
-</body>
-
+        const startingPointInput = document.getElementById("startingPoint");
+        const destinationInput = document.getElementById("destination");
+        startingPointInput.value = data.startingPointData;
+        destinationInput.value = data.destinationData;
+        initialStartingPoint = data.startingPointData;
+        initialDestination = data.destinationData;
+        resultContainer.classList.remove("invisible");
+      }
+    </script>
+  </body>
 </html>
