@@ -7,17 +7,23 @@
   <link href="./output.css" rel="stylesheet">
 </head>
 
-<body class="bg-blue-500 h-screen flex items-center justify-center">
-  <div class="m-auto bg-white p-8 max-w-2xl">
-    <h1 class="text-2xl font-bold mb-4">Loading Page</h1>
-    <div class="text-lg mb-6">Your adventure is loading<span class="animate-pulse">...</span></div>
-    <div class="flex items-center justify-center mb-6">
-      <img src="static/van.webp" alt="Van" class="w-20 animate-bounce" />
+<body class="">
+  <div class="flex h-screen items-center justify-center">
+    <div class="w-5/6 h-5/6 max-h-[35rem] flex-initial rounded-lg bg-gray-800 shadow-lg">
+      <div class="ml-16 flex bg-slate-100 p-6 h-full text-white">
+        <div class="m-4 flex w-1/2 flex-col rounded-lg bg-gray-700 p-4">
+          <div class="justify-center align-middle">
+            <h1 class="text-2xl font-bold mb-4">Loading Page</h1>
+            <div class="text-lg mb-6">Your adventure is loading<span class="animate-pulse">...</span></div>
+            <img src="static/van.webp" alt="Van" class="w-20 animate-bounce" />
+            <img src="static/earth.webp" alt="Earth" class="w-16 animate-spin" />
+          </div>
+        </div>
+        <div id="playlist" class="m-4 flex w-1/2 flex-col rounded-lg bg-gray-700 p-4">
+
+        </div>
+      </div>
     </div>
-    <div class="flex items-center justify-center">
-      <img src="static/earth.webp" alt="Earth" class="w-16 animate-spin" />
-    </div>
-    <ul id="playlist"></ul>
   </div>
   <script>
     const source = new EventSource('/stream');
@@ -44,9 +50,8 @@
           document.body.appendChild(script);
 
           // Step 2: Create an element for the iFrame
-          const embedContainer = document.createElement('div');
+          const embedContainer = document.getElementById('playlist');
           embedContainer.id = 'embed-iframe';
-          document.getElementById('playlist').appendChild(embedContainer);
 
           // Step 3: Define the window.onSpotifyIframeApiReady function
           window.onSpotifyIframeApiReady = (IFrameAPI) => {
