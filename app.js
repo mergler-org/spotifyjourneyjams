@@ -236,15 +236,15 @@ app.post("/saveInfo", spotifyApiMiddleware, async (req, res) => {
     const creativityLookupTable = {
       // whether or not to use top tracks, how many similar artists, and recommended limit
       1: [true, 0, 0],
-      2: [true, 3, 0],
-      3: [true, 5, 0],
-      4: [true, 15, 0],
-      5: [true, 15, 25],
-      6: [true, 15, 50],
+      2: [true, 2, 0],
+      3: [true, 4, 0],
+      4: [true, 6, 0],
+      5: [true, 10, 0],
+      6: [true, 10, 25],
       7: [true, 10, 50],
       8: [false, 4, 100],
       9: [false, 0, 100],
-      10: [false, 0, 20],
+      10: [false, 0, 10],
     };
     req.session.creativityParameters = creativityLookupTable[creativity];
     res.status(200).end();
