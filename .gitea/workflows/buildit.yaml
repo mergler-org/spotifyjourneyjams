@@ -45,4 +45,4 @@ jobs:
           push: true
           tags: |
             git.everythingisart.org/everythingisart/spotifyjourneyjams:latest
-            git.everythingisart.org/everythingisart/spotifyjourneyjams:0.4   
+            git.everythingisart.org/everythingisart/spotifyjourneyjams:0.5   
