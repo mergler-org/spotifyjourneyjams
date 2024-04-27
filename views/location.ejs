@@ -118,6 +118,23 @@
         initialDestination = data.destinationData;
         resultContainer.classList.remove("invisible");
       }
+
+      document
+        .getElementById("location")
+        .addEventListener("click", function () {
+          console.log("ya dawg");
+          navigator.geolocation.getCurrentPosition(
+            function (position) {
+              console.log(position.coords);
+              var startingPointInput = document.getElementById("startingPoint");
+              startingPointInput.value = position.coords.longitude+','+position.coords.latitude;
+            },
+            function (error) {
+              // handle the error
+            }
+          );
+        });
+
       function updateClock() {
         var now = new Date();
         var hours = now.getHours();
@@ -127,17 +144,16 @@
         // Add leading zeros if needed
         hours = (hours < 10 ? "0" : "") + hours;
         minutes = (minutes < 10 ? "0" : "") + minutes;
-        seconds = (seconds < 10 ? "0" : "") + seconds;
 
         // Format the time as HH:MM:SS
-        var timeString = hours + ":" + minutes + ":" + seconds;
+        var timeString = hours + ":" + minutes;
 
         // Update the clock element
         document.getElementById("clock").innerHTML = timeString;
       }
 
       // Update the clock every second
-      setInterval(updateClock, 1000);
+      setInterval(updateClock, 10000);
 
       // Initial call to display the clock immediately
       updateClock();
