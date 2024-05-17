@@ -578,8 +578,8 @@ video {
   }
 }
 
-.invisible {
-  visibility: hidden;
+.visible {
+  visibility: visible;
 }
 
 .m-2 {

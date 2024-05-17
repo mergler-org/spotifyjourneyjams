@@ -64,8 +64,7 @@ body {
   align-items: center;
   flex-direction: row;
   background-color: #28282B; 
-  margin: 40px;
-  margin-bottom: 0px;
+  margin: 30px;
   padding: 20px;
   border-radius: 32px;
   max-height: 50%;
@@ -161,8 +160,10 @@ body {
 
 .smaller {
   font-size: large;
-  margin: auto;
+  margin-top: auto;
+  margin-bottom: auto;
   padding: 0px;
+  width: 100%;
 }
 
 #result {
@@ -170,6 +171,14 @@ body {
   position: relative;
   top: 100%; /* Start position below */
   transition: top 0.5s ease; /* Smooth transition for top */
+  margin-top: 0px;
+  margin-bottom: 40px;
+  
+}
+
+#results p,h2 {
+  text-align: left;
+  width: 100%;
 }
 
 #result.visible {
