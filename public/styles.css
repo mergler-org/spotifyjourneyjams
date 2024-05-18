@@ -19,6 +19,7 @@ html,
   /* 6 */
   -webkit-tap-highlight-color: transparent;
   /* 7 */
+  color: white;
 }
 
 body {
@@ -27,6 +28,10 @@ body {
   line-height: inherit;
   /* 2 */
   height: 100vh;
+}
+
+h1, h2 {
+  margin: 0px;
 }
 
 .container {
@@ -40,14 +45,14 @@ body {
   display: flex;
   justify-content: right;
   align-items: center;
-  background-color: #28282B; /* Equivalent to bg-slate-100 */
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-lg */  
+  background-color: #28282b; /* Equivalent to bg-slate-100 */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-lg */
   flex-direction: row;
-  overflow: hidden;
+  /* overflow: hidden; */
   margin: 50px;
   width: 800px;
   border-radius: 32px;
-  height: 480px;
+  height: 500px;
 }
 
 .content-container {
@@ -63,7 +68,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: row;
-  background-color: #28282B; 
+  background-color: #28282b;
   margin: 30px;
   padding: 20px;
   border-radius: 32px;
@@ -78,7 +83,10 @@ body {
   width: 100%;
 }
 
-.startingPoint, .destination {
+.startingPoint,
+.destination,
+.searchTerm,
+.radioSearch {
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -86,11 +94,12 @@ body {
   background-color: #4a5568;
   border-radius: 12px;
   border: none;
-  height: 50px;
+  height: 40px;
 }
 
 .startingPoint input,
-.destination input {
+.destination input,
+.searchTerm input {
   background-color: transparent; /* Equivalent to bg-gray-700 */
   color: white;
   width: 90%;
@@ -100,12 +109,12 @@ body {
   border: none;
 }
 
-.startingPoint  {
+.startingPoint {
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
 }
 
-.destination  {
+.destination {
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
 }
@@ -173,10 +182,10 @@ body {
   transition: top 0.5s ease; /* Smooth transition for top */
   margin-top: 0px;
   margin-bottom: 40px;
-  
 }
 
-#results p,h2 {
+#results p,
+h2 {
   text-align: left;
   width: 100%;
 }
@@ -186,4 +195,75 @@ body {
   top: 0; /* Move up to its original position */
 }
 
-/*
+.radioSearch {
+  position: relative;
+  margin: 20px;
+}
+
+.radioSearch > * {
+  float: left;
+}
+
+.radioSearch input[type="radio"] {
+  display: none;
+}
+
+.radioSearch label {
+  font-size: large;
+  cursor: pointer;
+  min-width: 50%;
+  text-align: center;
+  color: #91a1bd;
+  -webkit-transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  -ms-transition: all 0.4s ease;
+  transition: all 0.4s ease;
+}
+
+.radioSlider {
+  background-color: red;
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  top: 0px;
+  border-radius: 12px;
+  -webkit-transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  -ms-transition: all 0.4s ease;
+  transition: all 0.4s ease;
+}
+
+#searchByArtist:checked ~ .radioSlider {
+  background: rgba(255, 255, 255, 0.3);
+  left: 0px;
+}
+
+#searchBySong:checked ~ .radioSlider {
+  background: rgba(255, 255, 255, 0.3);
+  left: 50%;
+}
+
+#searchByArtist:checked ~ #byArtistLabel {
+  color: white;
+}
+
+#searchBySong:checked ~ #bySongLabel {
+  color: white;
+}
+
+.info-box {
+  display: flex;
+  flex-direction: row;
+}
+
+.creativity {
+  align-content: center;
+  justify-content: center;
+  padding-left: 50px;
+}
+
+.list {
+  max-height: max-content;
+}
