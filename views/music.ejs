@@ -146,7 +146,7 @@
       results = document.getElementById("result");
       response = data.search;
       let search =
-        "<table class='w-full border-separate border-spacing-y-2 p-3'>";
+        "<table class='table'>";
 
       if (initialSearchType == "artist") {
         for (let i in response) {
@@ -166,32 +166,32 @@
           search +=
             "<tr id='" +
             URI +
-            "' class='cursor-pointer bg-gray-600 p-2 hover:bg-gray-500' onclick='handleRowClick(this)'>" +
+            "' class='rowClass' onclick='handleRowClick(this)'>" +
             "<td><a target='_blank' href='" +
             URL +
             "'>" +
-            "<div class='p-2'><img src='" +
+            "<div class=''><img src='" +
             imageUrl +
-            "' class='h-16 w-16 object-cover rounded' alt='" +
+            "' class='artistIcon' alt='" +
             name +
             "'></div></a></td>" +
-            "<td><div class='p-2 text-white'>" +
+            "<td><div class='name'>" +
             name +
-            "</div></td><td><div class='p-2 text-white'>" +
+            "</div></td><td><div class='genre'>" +
             genres +
             "</div></td>" +
-            "<td><button id='findSongs" +
+            "<td class='showSongsSVG'><button id='findSongs" +
             URI +
-            "' class='p-2 text-white' onclick='topSongs(\"" +
+            "' class='showSongsSVG' onclick='topSongs(\"" +
             URI +
-            "\")'><svg width='24' height='24' xmlns='http://www.w3.org/2000/svg' class='fill-slate-100'><path d='M4 .755l14.374 11.245-14.374 11.219.619.781 15.381-12-15.391-12-.609.755z' /></svg></button></td>" +
+            "\")'><svg width='24' height='24' stroke='#ffffff' fill='#ffffff' xmlns='http://www.w3.org/2000/svg' class=''><path d='M4 .755l14.374 11.245-14.374 11.219.619.781 15.381-12-15.391-12-.609.755z' /></svg></button></td>" +
             "</tr>" +
             "<tr id='outputRow" +
             URI +
             "' style='display: none;'>" +
-            "<td colspan='4' class='text-center'><div id='output" +
+            "<td colspan='4' class='songsShown'><div id='output" +
             URI +
-            "' class='text-white'></div></td>" +
+            "' class=''></div></td>" +
             "</tr>";
         }
       }
@@ -232,7 +232,7 @@
       }
 
       search +=
-        '</table><button id="submit" type="button" onclick="nextPage()" class="my-auto w-full cursor-pointer border-y border-gray-600 p-2 text-xl text-green-400 hover:text-green-200"> More Results </button>';
+        '</table><button id="submit" type="button" onclick="nextPage()" class="minimal-button"> Next Page </button>';
       results.innerHTML = search;
     }
 
@@ -242,6 +242,8 @@
       const button = document.getElementById("findSongs" + artistId);
 
       button.disabled = true;
+      button.style.cursor = 'default';
+      button.style.transform = 'rotate(90deg)';
 
       outputRow.style.display = "table-row"; // Hide output row
 
