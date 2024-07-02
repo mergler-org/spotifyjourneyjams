@@ -7,7 +7,7 @@ async function searchArtist(spotifyApi, artistInput, offset = 0) {
     const artists = results.body.artists.items;
     return artists;
   } catch (error) {
-    throw new Error(`Error saerching artists: ${error.message}`);
+    throw new Error(`Error saerching artists: ${error.message} ${results.status}`);
   }
 }
 

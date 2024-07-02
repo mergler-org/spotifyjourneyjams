@@ -27,7 +27,7 @@ body {
   /* 1 */
   line-height: inherit;
   /* 2 */
-  height: 100vh;
+  /* height: 100vh; */
 }
 
 h1, h2 {
@@ -48,11 +48,12 @@ h1, h2 {
   background-color: #28282b; /* Equivalent to bg-slate-100 */
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-lg */
   flex-direction: row;
-  /* overflow: hidden; */
+  overflow: hidden;
   margin: 50px;
   width: 800px;
   border-radius: 32px;
-  height: 500px;
+  height: auto; 
+  /* height: 500px; */
 }
 
 .content-container {
@@ -143,6 +144,8 @@ h1, h2 {
   text-align: center; /* Equivalent to text-center */
   font-size: 1.25rem; /* Equivalent to text-xl */
   background-color: transparent;
+  transition: all 0.4s ease;
+  text-decoration: none;
 
 }
 
@@ -158,9 +161,11 @@ h1, h2 {
 #music-button:hover {
   color: #9ae6b4; /* Equivalent to hover:text-green-200 */
 }
-
-#result {
-  color: aliceblue;
+#continue {
+  color: #68d391; /* Equivalent to text-green-400 */
+}
+#continue:hover{
+  color: #9ae6b4; /* Equivalent to hover:text-green-200 */
 }
 
 .invisible {
@@ -176,9 +181,10 @@ h1, h2 {
 }
 
 #result {
+  color: aliceblue;
   visibility: hidden; /* Initially invisible */
   position: relative;
-  top: 100%; /* Start position below */
+  top: 1000px; /* Start position below */
   transition: top 0.5s ease; /* Smooth transition for top */
   margin-top: 0px;
   margin-bottom: 40px;
@@ -267,26 +273,53 @@ h2 {
 .list {
   max-height: max-content;
   flex-direction: column;
+  padding: 30px;
 }
 
 .table {
   width: 100%;
-  border-collapse: separate;
+  border-collapse: collapse;
   border-spacing: 30px;
-  padding: 0.75rem;
+  padding: 15px;
+  border-radius: 20px;
+}
+
+#topSong {
+  color: #68d391;
 }
 
 .rowClass {
+  /* background-color: #4a5568; */
+  padding: 15px;
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
 
-  width: 100%;
+td {
   padding: 15px;
 }
+
+.rowClass:hover {
+  background: #818896;
+}
+
+.leftBorderRad {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.rightBorderRad {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
 
 .artistIcon {
   height: 70px;
   width: 70px;
   border-radius: 50%;
 }
+
 
 button.showSongsSVG {
   background-color: transparent;

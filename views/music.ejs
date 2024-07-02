@@ -109,9 +109,9 @@
         creativity === initialCreativity
       ) {
         console.log("Form values unchanged. Aborting form submission.");
+        document.getElementById("submit").disabled = false;
         return;
       }
-
       const response = await fetch("/search", {
         method: "POST",
         headers: {
@@ -129,10 +129,11 @@
         console.log("Received data from server:", data);
 
         updateResult(data);
-        document.getElementById("submit").disabled = true;
         document.getElementById("result").classList.add("visible");
+        document.getElementById("submit").disabled = false;
       } else {
         console.error("Error submitting form:", response.statusText);
+        document.getElementById("submit").disabled = false;
       }
     }
 
@@ -167,7 +168,7 @@
             "<tr id='" +
             URI +
             "' class='rowClass' onclick='handleRowClick(this)'>" +
-            "<td><a target='_blank' href='" +
+            "<td class='leftBorderRad'><a target='_blank' href='" +
             URL +
             "'>" +
             "<div class=''><img src='" +
@@ -180,7 +181,7 @@
             "</div></td><td><div class='genre'>" +
             genres +
             "</div></td>" +
-            "<td class='showSongsSVG'><button id='findSongs" +
+            "<td class='showSongsSVG rightBorderRad'><button id='findSongs" +
             URI +
             "' class='showSongsSVG' onclick='topSongs(\"" +
             URI +
@@ -190,7 +191,7 @@
             URI +
             "' style='display: none;'>" +
             "<td colspan='4' class='songsShown'><div id='output" +
-            URI +
+            URI + 
             "' class=''></div></td>" +
             "</tr>";
         }
@@ -211,20 +212,20 @@
           search +=
             "<tr id='" +
             response[i].id +
-            "' class='cursor-pointer bg-gray-600 p-2 hover:bg-gray-500' onclick='handleRowClick(this)'>" +
-            "<td><a target='_blank' href='" +
+            "' class='rowClass' onclick='handleRowClick(this)'>" +
+            "<td class='leftBorderRad'><a target='_blank' href='" +
             trackURL +
             "'>" +
-            "<div class='p-2'><img src='" +
+            "<div class=''><img src='" +
             albumImageUrl +
-            "' class='h-16 w-16 object-cover rounded' alt='" +
+            "' class='artistIcon' alt='" +
             trackName +
             " - Album'></div></a></td>" +
             "<td>" +
-            "<div class='p-2 text-white'>" +
+            "<div class=''>" +
             trackName +
             "</div></td>" +
-            "<td><div class='p-2 text-white'>" +
+            "<td class='rightBorderRad'><div class=''>" +
             artistName +
             "</div></td>" +
             "</tr>";
@@ -275,7 +276,7 @@
         song =
           "<a href='" +
           trackUrl +
-          "' target='_blank' class='text-blue-400 hover:text-blue-200'><p>" +
+          "' target='_blank' id='topSong'><p>" +
           trackName +
           "</p></a>";
         outputDiv.innerHTML += song;
@@ -311,28 +312,21 @@
     // Global function for handling row clicks
     function handleRowClick(row) {
       // Clear previous selection if any
-      const whenHighlighted = "bg-gray-500";
       const continueButton = document.getElementById("continue");
 
       if (selection) {
         const previousSelectionRow = document.getElementById(selection);
-        // Split the class names and remove them one by one
-        whenHighlighted.split(" ").forEach((className) => {
-          previousSelectionRow.classList.remove(className);
-        });
-        previousSelectionRow.classList.add("bg-gray-600");
+        previousSelectionRow.removeAttribute('style');
       }
 
       // Set the new selection
       selection = row.id;
 
-      // Highlight the selected row
-      whenHighlighted.split(" ").forEach((className) => {
-        row.classList.add(className);
-      });
-      row.classList.remove("bg-gray-600");
 
-      continueButton.style.display = "block";
+      row.style.backgroundColor = '#818896';
+      row.style.cursor = 'default';
+
+      continueButton.removeAttribute('style');
     }
 
     async function makePlaylist() {
