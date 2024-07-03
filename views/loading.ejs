@@ -3,40 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <title>Spotify Journey</title>
-    <link href="./output.css" rel="stylesheet" />
+    <link href="./styles.css" rel="stylesheet" />
   </head>
 
-  <body class="">
-    <div class="flex h-screen items-center justify-center">
-      <div
-        class="h-5/6 max-h-[35rem] w-5/6 flex-initial rounded-2xl bg-gray-800 shadow-lg"
-      >
-        <div class="ml-32 flex h-full bg-slate-100 p-6 text-white">
-          <div class="m-4 flex w-1/2 flex-col rounded-lg bg-gray-700 p-4">
-            <div class="justify-center align-middle">
-              <h1 class="mb-4 text-2xl font-bold">Loading Page</h1>
-              <div class="mb-6 text-lg">
-                Your adventure is loading<span class="animate-pulse">...</span>
-              </div>
-              <img
-                src="static/van.webp"
-                alt="Van"
-                class="w-20 animate-bounce"
-              />
-              <img
-                src="static/earth.webp"
-                alt="Earth"
-                class="w-16 animate-spin"
-              />
-            </div>
-          </div>
-          <div
-            id="playlist"
-            class="m-4 flex w-1/2 flex-col rounded-lg bg-gray-700 p-4"
-          ></div>
+  <body class="container">
+    <div class="">
+      <img src="static/spotifyjourneyjamslogo.png" />
+    </div>
+    <div class="carplay">
+      <div class="sidebar">
+        <div id="clock" class="clock"></div>
+      </div>
+      <div class="content-container">
+        <div class="content">
+          <h2 class="" id="travels">
+            <%= distance %> <span class="smaller">in</span> <%= duration %>
+          </h2>
+        </div>
+
+        <div id="results" >
+          <div id="playlist" class="content list"></div>
         </div>
       </div>
     </div>
+
     <script>
       const source = new EventSource("/stream");
 
@@ -52,31 +42,10 @@
             document.getElementById("playlist").appendChild(listItem);
           }
           if (data.madePlaylist) {
-            const pmessage = document.createElement("li");
-            pmessage.textContent = `Made and published your playlist!!`;
-            document.getElementById("playlist").appendChild(pmessage);
+            
 
-            const script = document.createElement("script");
-            script.src = "https://open.spotify.com/embed/iframe-api/v1";
-            script.async = true;
-            document.body.appendChild(script);
-
-            // Step 2: Create an element for the iFrame
             const embedContainer = document.getElementById("playlist");
-            embedContainer.id = "embed-iframe";
-
-            // Step 3: Define the window.onSpotifyIframeApiReady function
-            window.onSpotifyIframeApiReady = (IFrameAPI) => {
-              // Step 4: Create a controller object
-              const options = {
-                uri: data.madePlaylist, // Assuming data.madePlaylist contains the Spotify playlist URI
-              };
-              const callback = (EmbedController) => {
-                // You can perform actions with the EmbedController if needed
-              };
-              IFrameAPI.createController(embedContainer, options, callback);
-            }; // Append the iframe to the playlist container
-          }
+            embedContainer.innerHTML = data.madePlaylist;          }
         } catch (error) {
           console.error("Error parsing JSON:", error);
         }

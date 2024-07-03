@@ -1,4 +1,5 @@
 const express = require("express");
+const axios = require('axios');
 const SpotifyWebApi = require("spotify-web-api-node");
 const path = require("path");
 require("dotenv").config();
@@ -320,8 +321,17 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
       req.session.startPlaylist = true;
       await addToPlaylist(spotifyApi, trackIds, playlistUri);
       req.session.playlistComplete = true;
-      console.log("finished making playlist")
-      const chunk = JSON.stringify({ madePlaylist: roadTripPlaylist.body.uri });
+      console.log("finished making playlist");
+
+      const playlistLinkURL = roadTripPlaylist.body.external_urls.spotify;
+
+      // Get the oEmbed information
+      var oembedUrl = `https://open.spotify.com/oembed?url=${playlistLinkURL}`;
+      const response = await axios.get(oembedUrl);
+      // Extract the HTML embed code from the oEmbed response
+      const embedHtml = response.data.html;
+
+      const chunk = JSON.stringify({ madePlaylist: embedHtml });
       res.write(`data: ${chunk}\n\n`);
       res.end();
     } catch (error) {
