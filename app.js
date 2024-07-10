@@ -334,6 +334,7 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
 
       const chunk = JSON.stringify({ madePlaylist: embedHtml });
       res.write(`data: ${chunk}\n\n`);
+      delete req.session.playlist;
       res.end();
     } catch (error) {
       console.error("Error creating playlist:", error.message);
@@ -341,9 +342,9 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
     }
   }
   res.on("close", () => {
+    delete req.session.playlist;
     res.end();
   });
-  delete req.session.playlist
 });
 
 app.get("/results", spotifyApiMiddleware, async (req, res) => {
