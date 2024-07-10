@@ -3,79 +3,83 @@
   <head>
     <meta charset="UTF-8" />
     <title>Spotify Journey Jams</title>
-    <link href="./output.css" rel="stylesheet" />
+    <link href="./styles.css" rel="stylesheet" />
   </head>
 
-  <body class="h-fit bg-no-repeat bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-teal-400 via-amber-200 to-violet-600">
-    <div class="flex items-center justify-center m-10">
-      <img src="static/spotifyjourneyjamslogo.png" class=" " />
+  <body class="container">
+    <div class="">
+      <img src="static/spotifyjourneyjamslogo.png" />
     </div>
-    <div class="flex items-center justify-center">
-      <div
-        class="flex h-5/6 max-h-[35rem] min-h-[500px] w-5/6 rounded-2xl bg-slate-100 shadow-lg mb-5"
-      >
-        <div class="h-auto w-32 flex-col rounded-l-2xl bg-gray-800">
-          <div
-            id="clock"
-            class="m-5 text-center font-semibold text-white"
-          ></div>
-        </div>
-        <div class="flex-1">
-          <div class="w-full">
-            <form
-              id="inputs"
-              class="m-10 flex flex-col rounded-lg bg-gray-700 p-4"
-            >
+    <div class="carplay">
+      <div class="sidebar">
+        <div id="clock" class="clock"></div>
+      </div>
+      <div class="content-container">
+        <div class="content">
+          <form id="inputs" class="form-box">
+            <div class="startingPoint">
               <input
                 type="text"
                 id="startingPoint"
                 name="startingPoint"
                 placeholder="Where are you?"
-                class="w-full rounded-md bg-gray-600 p-2 text-white"
                 required
+                draggable="false"
               />
-              <div class="m-4 flex justify-center">
-                <p id="swapButton" class="text-4xl text-white">↕</p>
-              </div>
+              <svg
+                fill="#ffffff"
+                version="1.1"
+                id="location"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="40px"
+                height="40px"
+                viewBox="0 0 395.71 395.71"
+                xml:space="preserve"
+                stroke="#ffffff"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <g>
+                    <path
+                      d="M197.849,0C122.131,0,60.531,61.609,60.531,137.329c0,72.887,124.591,243.177,129.896,250.388l4.951,6.738 c0.579,0.792,1.501,1.255,2.471,1.255c0.985,0,1.901-0.463,2.486-1.255l4.948-6.738c5.308-7.211,129.896-177.501,129.896-250.388 C335.179,61.609,273.569,0,197.849,0z M197.849,88.138c27.13,0,49.191,22.062,49.191,49.191c0,27.115-22.062,49.191-49.191,49.191 c-27.114,0-49.191-22.076-49.191-49.191C148.658,110.2,170.734,88.138,197.849,88.138z"
+                    ></path>
+                  </g>
+                </g>
+              </svg>
+            </div>
+            <div class="destination">
               <input
                 type="text"
                 id="destination"
                 name="destination"
                 placeholder="Where are you going?"
-                class="w-full rounded-md bg-gray-600 p-2 text-white"
                 required
+                draggable="false"
               />
-              <button
-                id="submit"
-                type="button"
-                onclick="submitForm()"
-                class="m-5 w-full cursor-pointer border-y border-gray-600 p-2 text-xl text-blue-400 hover:text-blue-200"
-              >
-                Submit
-              </button>
-            </form>
-          </div>
-          <div class="w-full">
-            <div
-              id="result"
-              class="invisible m-10 flex flex-col rounded-lg bg-gray-700 p-4"
-            ></div>
-          </div>
+            </div>
+            <button
+              id="submit"
+              class="minimal-button"
+              type="button"
+              onclick="submitForm()"
+            >
+              Search
+            </button>
+          </form>
         </div>
+        <div class="content" id="result"></div>
       </div>
     </div>
     <script>
       let initialStartingPoint;
       let initialDestination;
-      document
-        .getElementById("swapButton")
-        .addEventListener("click", function () {
-          var startingPointInput = document.getElementById("startingPoint");
-          var destinationInput = document.getElementById("destination");
-          var tempValue = startingPointInput.value;
-          startingPointInput.value = destinationInput.value;
-          destinationInput.value = tempValue;
-        });
+
       async function submitForm() {
         const startingPoint = document.getElementById("startingPoint").value;
         const destination = document.getElementById("destination").value;
@@ -106,18 +110,54 @@
         const resultContainer = document.getElementById("result");
         // Display geocode and distance data
         resultContainer.innerHTML = `
-        <h2 class="m-3 font-bold text-white">Duration: ${data.duration}</h2>
-        <h3 class="m-3 font-bold text-white">Distance: ${data.distance} miles</h3>
-        <a class="mt-auto w-full cursor-pointer border-y border-gray-600 p-2 text-center text-xl text-green-400 hover:text-green-200" href="/music"> Pick Music </a>
-        `;
+              <div class="form-box" id='result.visible'>
+              <h2 class="">Duration: ${data.duration}</h2>
+              <p class="smaller">Distance: ${data.distance} miles</p>
+              <a class="minimal-button" id="music-button" href="/music"> Pick Music </a>
+              </div>
+              `;
         const startingPointInput = document.getElementById("startingPoint");
         const destinationInput = document.getElementById("destination");
         startingPointInput.value = data.startingPointData;
         destinationInput.value = data.destinationData;
         initialStartingPoint = data.startingPointData;
         initialDestination = data.destinationData;
-        resultContainer.classList.remove("invisible");
+        resultContainer.classList.add("visible");
       }
+
+      // Drag and drop functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const startingPointInput = document.getElementById("startingPoint");
+        const destinationInput = document.getElementById("destination");
+
+        startingPointInput.addEventListener("dragstart", handleDragStart);
+        destinationInput.addEventListener("dragstart", handleDragStart);
+
+        startingPointInput.addEventListener("drop", handleDrop);
+        destinationInput.addEventListener("drop", handleDrop);
+
+        startingPointInput.addEventListener("dragover", handleDragOver);
+        destinationInput.addEventListener("dragover", handleDragOver);
+
+        let dragged;
+
+        function handleDragStart(event) {
+          dragged = event.target;
+          event.dataTransfer.setData("text/plain", event.target.value);
+        }
+
+        function handleDrop(event) {
+          event.preventDefault();
+          const droppedValue = event.dataTransfer.getData("text/plain");
+          const targetValue = event.target.value;
+          event.target.value = dragged.value;
+          dragged.value = targetValue;
+        }
+
+        function handleDragOver(event) {
+          event.preventDefault();
+        }
+      });
 
       document
         .getElementById("location")
@@ -127,36 +167,21 @@
             function (position) {
               console.log(position.coords);
               var startingPointInput = document.getElementById("startingPoint");
-              startingPointInput.value = position.coords.longitude+','+position.coords.latitude;
+              if (
+                startingPointInput.value ==
+                position.coords.longitude + "," + position.coords.latitude
+              ) {
+                startingPointInput.value = "";
+              } else {
+                startingPointInput.value =
+                  position.coords.longitude + "," + position.coords.latitude;
+              }
             },
             function (error) {
               // handle the error
-            }
+            },
           );
         });
-
-      function updateClock() {
-        var now = new Date();
-        var hours = now.getHours();
-        var minutes = now.getMinutes();
-        var seconds = now.getSeconds();
-
-        // Add leading zeros if needed
-        hours = (hours < 10 ? "0" : "") + hours;
-        minutes = (minutes < 10 ? "0" : "") + minutes;
-
-        // Format the time as HH:MM:SS
-        var timeString = hours + ":" + minutes;
-
-        // Update the clock element
-        document.getElementById("clock").innerHTML = timeString;
-      }
-
-      // Update the clock every second
-      setInterval(updateClock, 10000);
-
-      // Initial call to display the clock immediately
-      updateClock();
     </script>
   </body>
 </html>
