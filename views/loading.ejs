@@ -21,8 +21,8 @@
           </h2>
         </div>
 
-        <div id="results" >
-          <div id="playlist" class="content list"></div>
+        <div id="result" >
+          <div id="playlist" class="list content.nopadding"></div>
         </div>
       </div>
     </div>
@@ -35,19 +35,27 @@
 
         try {
           const data = JSON.parse(event.data);
+          const resultContainer = document.getElementById("result")
 
           if (data.foundSongs) {
+            resultContainer.classList.add("visible")
             const listItem = document.createElement("li");
-            listItem.textContent = `Found songs you might like!`;
+            listItem.textContent = `Found artists you might like!`;
+            document.getElementById("playlist").appendChild(listItem);
+          }
+          if (data.choseSongs) {
+            const listItem = document.createElement("li");
+            listItem.textContent = `Picking out songs for your playlist!`;
             document.getElementById("playlist").appendChild(listItem);
           }
           if (data.madePlaylist) {
             
-
+            source.close();
             const embedContainer = document.getElementById("playlist");
             embedContainer.innerHTML = data.madePlaylist;          }
         } catch (error) {
           console.error("Error parsing JSON:", error);
+          source.close();
         }
       });
     </script>

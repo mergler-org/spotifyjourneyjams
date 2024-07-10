@@ -190,12 +190,6 @@ h1, h2 {
   margin-bottom: 40px;
 }
 
-#results p,
-h2 {
-  text-align: left;
-  width: 100%;
-}
-
 #result.visible {
   visibility: visible; /* Make visible when the 'visible' class is applied */
   top: 0; /* Move up to its original position */
@@ -327,4 +321,8 @@ button.showSongsSVG {
   border: none;
   cursor: pointer;
   transition: all 0.4s ease;
+}
+
+.nopadding {
+  padding: 0;
 }

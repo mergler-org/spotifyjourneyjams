@@ -229,7 +229,6 @@ app.post("/topSongs", spotifyApiMiddleware, async (req, res) => {
 
 app.post("/saveInfo", spotifyApiMiddleware, async (req, res) => {
   const spotifyApi = req.spotifyApi;
-  const session = req.session;
   try {
     const { selection, searchType, creativity } = req.body;
     req.session.selection = selection;
@@ -257,7 +256,7 @@ app.post("/saveInfo", spotifyApiMiddleware, async (req, res) => {
   }
 });
 
-app.get("/loading", spotifyApiMiddleware, async (req, res) => {
+app.get("/playlist", spotifyApiMiddleware, async (req, res) => {
   try {
     res.render("loading");
   } catch (error) {
@@ -275,8 +274,9 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
     "Content-Type": "text/event-stream",
   });
 
-  if (!req.session.startRecommend) {
-    req.session.startRecommend = true;
+  if (!req.session.playlist) {
+    req.session.playlist = {}
+    req.session.playlist.startRecommend = true;
     try {
       console.log("Getting  song list");
       const initialSongList = await collectSongList(
@@ -286,9 +286,10 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
         req.session.searchType,
         duration
       );
+      res.write(`data: `+JSON.stringify({ foundSongs: true })+`\n\n`);
       const pickedSongs = await pickSongs(duration, initialSongList);
-      req.session.songList = pickedSongs;
-      const chunk = JSON.stringify({ foundSongs: true });
+      req.session.playlist.songList = pickedSongs;
+      const chunk = JSON.stringify({ choseSongs: true });
       res.write(`data: ${chunk}\n\n`);
     } catch (error) {
       console.log("Issue getting recommendations: \n", error);
@@ -297,15 +298,15 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
   }
 
  
-  if (!req.session.startPlaylist) {
+  if (!req.session.playlist.startPlaylist) {
     try {
-      const trackIds = req.session.songList.map(
+      const trackIds = req.session.playlist.songList.map(
         (track) => "spotify:track:" + track.id
       );
       console.log(trackIds);
       // Create playlist
       const playlistName = "Road Trip!";
-      const playlistDescription = "Made with love on Spotify Journey";
+      const playlistDescription = "Made with love on Spotify Journey Jams";
 
       // Get the current user's ID
       const userId = await spotifyApi.getMe();
@@ -317,10 +318,10 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
 
       // Get the URI of the created playlist
       var playlistUri = roadTripPlaylist.body.id;
-      req.session.playlist = roadTripPlaylist;
-      req.session.startPlaylist = true;
+      req.session.playlist.playlistData = roadTripPlaylist;
+      req.session.playlist.startPlaylist = true;
       await addToPlaylist(spotifyApi, trackIds, playlistUri);
-      req.session.playlistComplete = true;
+      req.session.playlist.playlistComplete = true;
       console.log("finished making playlist");
 
       const playlistLinkURL = roadTripPlaylist.body.external_urls.spotify;
@@ -342,10 +343,11 @@ app.get("/stream", spotifyApiMiddleware, async (req, res) => {
   res.on("close", () => {
     res.end();
   });
+  delete req.session.playlist
 });
 
 app.get("/results", spotifyApiMiddleware, async (req, res) => {
-  playlistDetails = req.session.playlist;
+  playlistDetails = req.session.playlist.playlistData;
   console.log(playlistDetails);
   res.render("results", {});
 });
