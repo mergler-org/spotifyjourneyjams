@@ -265,86 +265,104 @@ app.get("/playlist", spotifyApiMiddleware, async (req, res) => {
   }
 });
 
-app.get("/stream", spotifyApiMiddleware, async (req, res) => {
+const PlaylistState = {
+  INIT: 'INIT',
+  COLLECTING_SONGS: 'COLLECTING_SONGS',
+  PICKING_SONGS: 'PICKING_SONGS',
+  CREATING_PLAYLIST: 'CREATING_PLAYLIST',
+  ADDING_SONGS: 'ADDING_SONGS',
+  COMPLETE: 'COMPLETE'
+};
+
+async function handlePlaylistCreation(req, res) {
   const spotifyApi = req.spotifyApi;
   const duration = req.session.duration;
+
   res.writeHead(200, {
     Connection: "keep-alive",
     "Cache-Control": "no-cache",
     "Content-Type": "text/event-stream",
   });
 
-  if (!req.session.playlist) {
-    req.session.playlist = {}
-    req.session.playlist.startRecommend = true;
-    try {
-      console.log("Getting  song list");
-      const initialSongList = await collectSongList(
-        spotifyApi,
-        req.session.creativityParameters,
-        req.session.selection,
-        req.session.searchType,
-        duration
-      );
-      res.write(`data: `+JSON.stringify({ foundSongs: true })+`\n\n`);
-      const pickedSongs = await pickSongs(duration, initialSongList);
-      req.session.playlist.songList = pickedSongs;
-      const chunk = JSON.stringify({ choseSongs: true });
-      res.write(`data: ${chunk}\n\n`);
-    } catch (error) {
-      console.log("Issue getting recommendations: \n", error);
-      res.status(500);
+  const state = req.session.playlistState || PlaylistState.INIT;
+
+  try {
+    switch (state) {
+      case PlaylistState.INIT:
+        req.session.playlist = {};
+        req.session.playlistState = PlaylistState.COLLECTING_SONGS;
+        // Fall through to collect songs
+      case PlaylistState.COLLECTING_SONGS:
+        console.log("Getting song list");
+        const initialSongList = await collectSongList(
+          spotifyApi,
+          req.session.creativityParameters,
+          req.session.selection,
+          req.session.searchType,
+          duration
+        );
+        res.write(`data: ` + JSON.stringify({ foundSongs: true }) + `\n\n`);
+        req.session.playlist.songList = await pickSongs(duration, initialSongList);
+        req.session.playlistState = PlaylistState.PICKING_SONGS;
+        // Fall through to pick songs
+      case PlaylistState.PICKING_SONGS:
+        const chunk = JSON.stringify({ choseSongs: true });
+        res.write(`data: ${chunk}\n\n`);
+        req.session.playlistState = PlaylistState.CREATING_PLAYLIST;
+        // Fall through to create playlist
+      case PlaylistState.CREATING_PLAYLIST:
+        const trackIds = req.session.playlist.songList.map(
+          (track) => "spotify:track:" + track.id
+        );
+        console.log(trackIds);
+
+        const playlistName = "Road Trip!";
+        const playlistDescription = "Made with love on Spotify Journey Jams";
+
+        const userId = await spotifyApi.getMe();
+        const roadTripPlaylist = await spotifyApi.createPlaylist(playlistName, {
+          description: playlistDescription,
+        });
+
+        const playlistUri = roadTripPlaylist.body.id;
+        req.session.playlist.playlistData = roadTripPlaylist;
+        req.session.playlistState = PlaylistState.ADDING_SONGS;
+        // Fall through to add songs
+      case PlaylistState.ADDING_SONGS:
+        const trackUris = req.session.playlist.songList.map(
+          (track) => "spotify:track:" + track.id
+        );
+        await addToPlaylist(spotifyApi, trackUris, req.session.playlist.playlistData.body.id);
+        req.session.playlistState = PlaylistState.COMPLETE;
+        // Fall through to complete
+      case PlaylistState.COMPLETE:
+        const playlistLinkURL = req.session.playlist.playlistData.body.external_urls.spotify;
+        const oembedUrl = `https://open.spotify.com/oembed?url=${playlistLinkURL}`;
+        const response = await axios.get(oembedUrl);
+        const embedHtml = response.data.html;
+
+        const playlistChunk = JSON.stringify({ madePlaylist: embedHtml });
+        res.write(`data: ${playlistChunk}\n\n`);
+        
+        delete req.session.playlist;
+        delete req.session.playlistState;
+        res.end();
+        break;
     }
+  } catch (error) {
+    console.error("Error handling playlist creation:", error.message);
+    res.status(500).send("Internal Server Error");
   }
 
- 
-  if (!req.session.playlist.startPlaylist) {
-    try {
-      const trackIds = req.session.playlist.songList.map(
-        (track) => "spotify:track:" + track.id
-      );
-      console.log(trackIds);
-      // Create playlist
-      const playlistName = "Road Trip!";
-      const playlistDescription = "Made with love on Spotify Journey Jams";
-
-      // Get the current user's ID
-      const userId = await spotifyApi.getMe();
-
-      // Create the playlist
-      var roadTripPlaylist = await spotifyApi.createPlaylist(playlistName, {
-        description: playlistDescription,
-      });
-
-      // Get the URI of the created playlist
-      var playlistUri = roadTripPlaylist.body.id;
-      req.session.playlist.playlistData = roadTripPlaylist;
-      req.session.playlist.startPlaylist = true;
-      await addToPlaylist(spotifyApi, trackIds, playlistUri);
-      req.session.playlist.playlistComplete = true;
-      console.log("finished making playlist");
-
-      const playlistLinkURL = roadTripPlaylist.body.external_urls.spotify;
-
-      // Get the oEmbed information
-      var oembedUrl = `https://open.spotify.com/oembed?url=${playlistLinkURL}`;
-      const response = await axios.get(oembedUrl);
-      // Extract the HTML embed code from the oEmbed response
-      const embedHtml = response.data.html;
-
-      const chunk = JSON.stringify({ madePlaylist: embedHtml });
-      res.write(`data: ${chunk}\n\n`);
-      res.end();
-    } catch (error) {
-      console.error("Error creating playlist:", error.message);
-      // Handle the error as needed
-    }
-  }
   res.on("close", () => {
+    delete req.session.playlist;
+    delete req.session.playlistState;
     res.end();
   });
-  delete req.session.playlist
-});
+}
+
+app.get("/stream", spotifyApiMiddleware, handlePlaylistCreation);
+
 
 app.get("/results", spotifyApiMiddleware, async (req, res) => {
   playlistDetails = req.session.playlist.playlistData;
