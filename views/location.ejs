@@ -8,12 +8,9 @@
 
   <body class="container">
     <div class="">
-      <img src="static/spotifyjourneyjamslogo.png" />
+      <!-- <img src="static/spotifyjourneyjamslogo.png" /> -->
     </div>
     <div class="carplay">
-      <div class="sidebar">
-        <div id="clock" class="clock"></div>
-      </div>
       <div class="content-container">
         <div class="content">
           <form id="inputs" class="form-box">
@@ -73,7 +70,7 @@
             </button>
           </form>
         </div>
-        <div class="content" id="result"></div>
+        <div class="content invisible" id="result-container"></div>
       </div>
     </div>
     <script>
@@ -107,13 +104,14 @@
         }
       }
       function updateResult(data) {
-        const resultContainer = document.getElementById("result");
+        const resultContainer = document.getElementById("result-container");
         // Display geocode and distance data
         resultContainer.innerHTML = `
-              <div class="form-box" id='result.visible'>
-              <h2 class="">Duration: ${data.duration}</h2>
-              <p class="smaller">Distance: ${data.distance} miles</p>
-              <a class="minimal-button" id="music-button" href="/music"> Pick Music </a>
+              
+              <div class="form-box" id='result'>
+              <h2 class=""> ${data.duration}</h2>
+              <h3 class="" style="opacity:70%;">${data.distance}</h3>
+              <button class="minimal-button" id="music-button" type="button" onClick="gotoMusic()"> Pick Music </button>
               </div>
               `;
         const startingPointInput = document.getElementById("startingPoint");
@@ -122,7 +120,11 @@
         destinationInput.value = data.destinationData;
         initialStartingPoint = data.startingPointData;
         initialDestination = data.destinationData;
-        resultContainer.classList.add("visible");
+        resultContainer.classList.remove("invisible");
+      }
+
+      function gotoMusic() {
+        window.location.replace("/music");
       }
 
       // Drag and drop functionality
