@@ -22,6 +22,10 @@ html,
   color: white;
 }
 
+@view-transition {
+  navigation: auto;
+}
+
 body {
   margin: 0;
   /* 1 */
@@ -230,6 +234,9 @@ h1, h2 {
 .radioSearch {
   position: relative;
   margin: 20px;
+  height: 33%;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .radioSearch > * {
