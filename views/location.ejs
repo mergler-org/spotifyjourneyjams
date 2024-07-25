@@ -21,12 +21,12 @@
                 name="startingPoint"
                 placeholder="Where are you?"
                 required
-                draggable="false"
               />
               <svg
                 fill="#ffffff"
                 version="1.1"
                 id="location"
+                class="locationsvg"
                 xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
                 width="40px"
@@ -57,8 +57,8 @@
                 name="destination"
                 placeholder="Where are you going?"
                 required
-                draggable="false"
               />
+              <svg width='24' height='24' style="transform: rotate(-90deg);" stroke='#ffffff' fill='#ffffff' xmlns='http://www.w3.org/2000/svg' class='locationsvg' id="swapplace"><path d='M4 .755l14.374 11.245-14.374 11.219.619.781 15.381-12-15.391-12-.609.755z' /></svg>
             </div>
             <button
               id="submit"
@@ -127,40 +127,6 @@
         window.location.replace("/music");
       }
 
-      // Drag and drop functionality
-      document.addEventListener("DOMContentLoaded", function () {
-        const startingPointInput = document.getElementById("startingPoint");
-        const destinationInput = document.getElementById("destination");
-
-        startingPointInput.addEventListener("dragstart", handleDragStart);
-        destinationInput.addEventListener("dragstart", handleDragStart);
-
-        startingPointInput.addEventListener("drop", handleDrop);
-        destinationInput.addEventListener("drop", handleDrop);
-
-        startingPointInput.addEventListener("dragover", handleDragOver);
-        destinationInput.addEventListener("dragover", handleDragOver);
-
-        let dragged;
-
-        function handleDragStart(event) {
-          dragged = event.target;
-          event.dataTransfer.setData("text/plain", event.target.value);
-        }
-
-        function handleDrop(event) {
-          event.preventDefault();
-          const droppedValue = event.dataTransfer.getData("text/plain");
-          const targetValue = event.target.value;
-          event.target.value = dragged.value;
-          dragged.value = targetValue;
-        }
-
-        function handleDragOver(event) {
-          event.preventDefault();
-        }
-      });
-
       document
         .getElementById("location")
         .addEventListener("click", function () {
@@ -184,6 +150,12 @@
             },
           );
         });
+      document.getElementById("swapplace").addEventListener("click", function () {
+        const startingPointInput = document.getElementById("startingPoint").value;
+        const destinationPointInput = document.getElementById("destination").value
+        document.getElementById("startingPoint").value = destinationPointInput;
+        document.getElementById("destination").value = startingPointInput;
+      });
     </script>
   </body>
 </html>

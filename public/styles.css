@@ -147,11 +147,12 @@ h1, h2 {
   color: #b0b1b3;
 }
 
-#location {
+.locationsvg {
   margin: 10px;
   max-height: 30px;
   width: auto;
   fill: #b0b1b3;
+  stroke: #b0b1b3;
   cursor: pointer;
 }
 
