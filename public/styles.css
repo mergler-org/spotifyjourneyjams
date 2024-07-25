@@ -34,7 +34,8 @@ body {
   /* height: 100vh; */
 }
 
-h1, h2 {
+h1,
+h2 {
   margin: 0px;
 }
 
@@ -56,7 +57,7 @@ h1, h2 {
   margin: 50px;
   width: 800px;
   border-radius: 30px;
-  min-height: 80%;  
+  min-height: 80%;
   transition: all 0.3s ease-in-out;
   /* height: 500px; */
 }
@@ -67,7 +68,6 @@ h1, h2 {
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease-in-out;
-
 }
 
 .content {
@@ -110,7 +110,7 @@ h1, h2 {
 .startingPoint input,
 .destination input,
 .searchTerm input {
-  background-color: transparent; 
+  background-color: transparent;
   color: white;
   width: 90%;
   outline: none; /* Ensures no outline on focus */
@@ -160,7 +160,6 @@ h1, h2 {
   cursor: pointer;
 }
 
-
 .minimal-button {
   margin-top: 15px;
   padding: 5px;
@@ -175,7 +174,6 @@ h1, h2 {
   background-color: transparent;
   transition: all 0.4s ease;
   text-decoration: none;
-
 }
 
 #submit {
@@ -193,14 +191,13 @@ h1, h2 {
 #continue {
   color: #68d391; /* Equivalent to text-green-400 */
 }
-#continue:hover{
+#continue:hover {
   color: #9ae6b4; /* Equivalent to hover:text-green-200 */
 }
 
 .invisible {
   visibility: hidden;
 }
-
 
 #result {
   color: aliceblue;
@@ -210,7 +207,6 @@ h1, h2 {
   margin-bottom: auto;
   padding: 0px;
   width: 100%;
- 
 }
 
 #result-container {
@@ -346,13 +342,11 @@ td {
   border-bottom-right-radius: 20px;
 }
 
-
 .artistIcon {
   height: 70px;
   width: 70px;
   border-radius: 50%;
 }
-
 
 button.showSongsSVG {
   background-color: transparent;
