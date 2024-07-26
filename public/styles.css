@@ -35,8 +35,11 @@ body {
 }
 
 h1,
-h2 {
+h2,
+h3 {
   margin: 0px;
+  align-content: end;
+  padding: 10px;
 }
 
 .container {
@@ -53,7 +56,6 @@ h2 {
   background-color: #91bd98; /* Equivalent to bg-slate-100 */
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-lg */
   flex-direction: row;
-  overflow: hidden;
   margin: 50px;
   width: 800px;
   border-radius: 30px;
@@ -75,7 +77,7 @@ h2 {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-color: #4a5255;
+  background-color: #252a2cc7;
   margin: 30px;
   padding: 20px;
   border-radius: 32px;
@@ -212,12 +214,11 @@ h2 {
 #result-container {
   max-height: 0;
   opacity: 0;
-  overflow: hidden;
   transition: all 0.3s ease-in-out;
 }
 
 #result-container:not(.invisible) {
-  max-height: 500px;
+  max-height: none;
   opacity: 1;
 }
 
@@ -262,7 +263,7 @@ h2 {
   height: 100%;
   position: absolute;
   top: 0px;
-  border-radius: 12px;
+  border-radius: 20px;
   -webkit-transition: all 0.4s ease;
   -moz-transition: all 0.4s ease;
   -o-transition: all 0.4s ease;
@@ -299,18 +300,20 @@ h2 {
   padding-left: 50px;
 }
 
+#result-container.list {
+  padding: 0px;
+  background-color: transparent;
+}
+
 .list {
   max-height: max-content;
   flex-direction: column;
-  padding: 30px;
 }
 
 .table {
   width: 100%;
-  border-collapse: collapse;
-  border-spacing: 30px;
+  border-spacing: 0 3px;
   padding: 15px;
-  border-radius: 20px;
 }
 
 #topSong {
@@ -318,10 +321,10 @@ h2 {
 }
 
 .rowClass {
-  /* background-color: #4a5568; */
   padding: 15px;
   transition: all 0.4s ease;
   cursor: pointer;
+  background-color: #252a2cc7;
 }
 
 td {
@@ -329,7 +332,7 @@ td {
 }
 
 .rowClass:hover {
-  background: #818896;
+  background: #252a2cef;
 }
 
 .leftBorderRad {
@@ -341,6 +344,8 @@ td {
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
 }
+
+
 
 .artistIcon {
   height: 70px;

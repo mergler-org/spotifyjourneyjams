@@ -15,9 +15,8 @@
         <div class="content">
           <form id="searchForm" class="form-box">
             <div class="info-box">
-              <h2 class="" id="travels">
-                <%= distance %> <span class="smaller">in</span> <%= duration %>
-              </h2>
+              <h2 class=""> <%= duration %> </h2>
+              <h3 class="" style="opacity:70%;"><%= distance %></h3>
               <div class="creativity">
                 <input
                   type="range"
@@ -78,8 +77,8 @@
         </div>
 
         <div
-          id="result"
-          class="content list"
+          id="result-container"
+          class="content invisible list"
         ></div>
       </div>
     </div>
@@ -126,7 +125,7 @@
         console.log("Received data from server:", data);
 
         updateResult(data);
-        document.getElementById("result").classList.add("visible");
+        document.getElementById("result-container").classList.remove("invisible");
         document.getElementById("submit").disabled = false;
       } else {
         console.error("Error submitting form:", response.statusText);
@@ -141,7 +140,7 @@
       selection = null;
       const continueButton = document.getElementById("continue");
       continueButton.style.display = "none";
-      results = document.getElementById("result");
+      results = document.getElementById("result-container");
       response = data.search;
       let search =
         "<table class='table'>";
@@ -186,8 +185,8 @@
             "</tr>" +
             "<tr id='outputRow" +
             URI +
-            "' style='display: none;'>" +
-            "<td colspan='4' class='songsShown'><div id='output" +
+            "'class='rowClass' style='display: none;'>" +
+            "<td colspan='4' class='songsShown leftBorderRad rightBorderRad'><div id='output" +
             URI + 
             "' class=''></div></td>" +
             "</tr>";
@@ -320,7 +319,7 @@
       selection = row.id;
 
 
-      row.style.backgroundColor = '#818896';
+      row.style.backgroundColor = '#252a2cef';
       row.style.cursor = 'default';
 
       continueButton.removeAttribute('style');
