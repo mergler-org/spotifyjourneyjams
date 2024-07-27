@@ -6,84 +6,84 @@
     <link href="./styles.css" rel="stylesheet" />
   </head>
 
-  <body class="container">
-    <div class="">
-      <!-- <img src="static/spotifyjourneyjamslogo.png" /> -->
-    </div>
-    <div class="carplay">
-      <div class="content-container">
-        <div class="content">
-          <form id="inputs" class="form-box">
-            <div class="startingPoint">
-              <input
-                type="text"
-                id="startingPoint"
-                name="startingPoint"
-                placeholder="Where are you?"
-                required
-              />
-              <svg
-                fill="#ffffff"
-                version="1.1"
-                id="location"
-                class="locationsvg"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="40px"
-                height="40px"
-                viewBox="0 0 395.71 395.71"
-                xml:space="preserve"
-                stroke="#ffffff"
-              >
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <g>
-                    <path
-                      d="M197.849,0C122.131,0,60.531,61.609,60.531,137.329c0,72.887,124.591,243.177,129.896,250.388l4.951,6.738 c0.579,0.792,1.501,1.255,2.471,1.255c0.985,0,1.901-0.463,2.486-1.255l4.948-6.738c5.308-7.211,129.896-177.501,129.896-250.388 C335.179,61.609,273.569,0,197.849,0z M197.849,88.138c27.13,0,49.191,22.062,49.191,49.191c0,27.115-22.062,49.191-49.191,49.191 c-27.114,0-49.191-22.076-49.191-49.191C148.658,110.2,170.734,88.138,197.849,88.138z"
-                    ></path>
-                  </g>
-                </g>
-              </svg>
-            </div>
-            <div class="destination">
-              <input
-                type="text"
-                id="destination"
-                name="destination"
-                placeholder="Where are you going?"
-                required
-              />
-              <svg
-                width="24"
-                height="24"
-                style="transform: rotate(-90deg)"
-                stroke="#ffffff"
-                fill="#ffffff"
-                xmlns="http://www.w3.org/2000/svg"
-                class="locationsvg"
-                id="swapplace"
-              >
-                <path
-                  d="M4 .755l14.374 11.245-14.374 11.219.619.781 15.381-12-15.391-12-.609.755z"
+  <body class="">
+
+    <div class="container">
+      <div class="carplay">
+        <div class="content-container">
+          <div class="content">
+            <form id="inputs" class="form-box">
+              <div class="startingPoint">
+                <input
+                  type="text"
+                  id="startingPoint"
+                  name="startingPoint"
+                  placeholder="Where are you?"
+                  required
                 />
-              </svg>
-            </div>
-            <button
-              id="submit"
-              class="minimal-button"
-              type="button"
-              onclick="submitForm()"
-            >
-              Search
-            </button>
-          </form>
+                <svg
+                  fill="#ffffff"
+                  version="1.1"
+                  id="location"
+                  class="locationsvg"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                  width="40px"
+                  height="40px"
+                  viewBox="0 0 395.71 395.71"
+                  xml:space="preserve"
+                  stroke="#ffffff"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <g>
+                      <path
+                        d="M197.849,0C122.131,0,60.531,61.609,60.531,137.329c0,72.887,124.591,243.177,129.896,250.388l4.951,6.738 c0.579,0.792,1.501,1.255,2.471,1.255c0.985,0,1.901-0.463,2.486-1.255l4.948-6.738c5.308-7.211,129.896-177.501,129.896-250.388 C335.179,61.609,273.569,0,197.849,0z M197.849,88.138c27.13,0,49.191,22.062,49.191,49.191c0,27.115-22.062,49.191-49.191,49.191 c-27.114,0-49.191-22.076-49.191-49.191C148.658,110.2,170.734,88.138,197.849,88.138z"
+                      ></path>
+                    </g>
+                  </g>
+                </svg>
+              </div>
+              <div class="destination">
+                <input
+                  type="text"
+                  id="destination"
+                  name="destination"
+                  placeholder="Where are you going?"
+                  required
+                />
+                <svg
+                  width="24"
+                  height="24"
+                  style="transform: rotate(-90deg)"
+                  stroke="#ffffff"
+                  fill="#ffffff"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="locationsvg"
+                  id="swapplace"
+                >
+                  <path
+                    d="M4 .755l14.374 11.245-14.374 11.219.619.781 15.381-12-15.391-12-.609.755z"
+                  />
+                </svg>
+              </div>
+              <button
+                id="submit"
+                class="minimal-button"
+                type="button"
+                onclick="submitForm()"
+              >
+                Search
+              </button>
+            </form>
+          </div>
+          <div class="content invisible" id="result-container"></div>
         </div>
-        <div class="content invisible" id="result-container"></div>
       </div>
     </div>
     <script>

@@ -1,22 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title>Spotify Login</title>
-  <link href="./output.css" rel="stylesheet">
-</head>
+  <head>
+    <title>Spotify Login</title>
+    <link href="./styles.css" rel="stylesheet" />
+  </head>
 
-<body>
-  <div class="flex h-screen items-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-teal-400 via-amber-200 to-violet-600">
-    <div class="m-auto">
-      <div class=" flex items-center justify-center my-6">
-        <p class="text-xl font-medium mx-8">Made for</p>
-        <a href="https://open.spotify.com"><img src="static/spotifylogo.webp" class="w-56" /></a>      </div>
-      <img src="static/spotifyjourneyjamslogo.png" class="w-108 px-10"/>
-      <div class="flex justify-center my-20">
-        <a href="/login" class="rounded-full bg-green-600 p-5 px-10 text-3xl text-white">Log in with Spotify</a>
+  <body>
+    <div class="container">
+      <div class="carplay">
+        <div class="content-container">
+          <div class="content">
+            <div class="form-box">
+              <p class="">Made for</p>
+              <a href="https://open.spotify.com"
+                ><img src="static/spotifylogo.webp" class=""
+              /></a>
+            </div>
+            <img src="static/spotifyjourneyjamslogo.png" class="" />
+            <div class="flex justify-center my-20">
+              <a
+                href="/login"
+                class="minimal-button"
+                id="music-button"
+                >Log in with Spotify</a
+              >
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

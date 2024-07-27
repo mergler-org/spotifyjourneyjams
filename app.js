@@ -258,7 +258,7 @@ app.post("/saveInfo", spotifyApiMiddleware, async (req, res) => {
 
 app.get("/playlist", spotifyApiMiddleware, async (req, res) => {
   try {
-    res.render("loading");
+    res.render("result");
   } catch (error) {
     console.error("Error during loading:", error);
     res.status(500).json({ error: "Internal Server Error on loading screen" });

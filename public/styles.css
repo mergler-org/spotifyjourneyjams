@@ -30,6 +30,9 @@ body {
   margin: 0;
   /* 1 */
   line-height: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   /* 2 */
   /* height: 100vh; */
 }
@@ -43,26 +46,51 @@ h3 {
 }
 
 .container {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
+  width: 800px;
+  margin: 50px;
+  border-radius: 30px;
+  overflow: hidden; /* Ensure the pseudo-element does not overflow */
+  min-height: 70vh;
+  transition: all 0.3s ease-in-out;
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%; /* Ensure it matches the height of the container */
+  background-color: #4ffd6c; 
+  background-image: var(--background-image); /* Use the CSS custom property for the background image */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+  border-radius: 30px; /* Match the border-radius of the container */
+  filter: blur(20px);
+  transition: all 1s ease-in-out;
 }
 
 .carplay {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #91bd98; /* Equivalent to bg-slate-100 */
+  background-color: #6b6b6bbd;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-lg */
   flex-direction: row;
-  margin: 50px;
-  width: 800px;
   border-radius: 30px;
-  min-height: 80%;
+  min-height: 70vh;
   transition: all 0.3s ease-in-out;
-  /* height: 500px; */
+  width: 100%;
 }
+
+
 
 .content-container {
   height: 100%;
@@ -163,7 +191,6 @@ h3 {
 }
 
 .minimal-button {
-  margin-top: 15px;
   padding: 5px;
   width: 100%;
   cursor: pointer;
@@ -179,22 +206,26 @@ h3 {
 }
 
 #submit {
-  color: #60a5fa; /* Equivalent to text-green-400 */
+  margin-top: 15px;
+  color: #60a5fa; 
 }
 #submit:hover {
-  color: #bfdbfe; /* Equivalent to hover:text-green-200 */
+  color: #bfdbfe; 
 }
 #music-button {
-  color: #68d391; /* Equivalent to text-green-400 */
+  margin-top: 15px;
+  color: #68d391; 
 }
 #music-button:hover {
-  color: #9ae6b4; /* Equivalent to hover:text-green-200 */
+  color: #9ae6b4; 
 }
 #continue {
-  color: #68d391; /* Equivalent to text-green-400 */
+  border-bottom: none;
+  border-top: none;
+  color: #60a5fa; 
 }
 #continue:hover {
-  color: #9ae6b4; /* Equivalent to hover:text-green-200 */
+  color: #bfdbfe; 
 }
 
 .invisible {

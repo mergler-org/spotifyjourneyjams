@@ -6,80 +6,76 @@
     <link href="./styles.css" rel="stylesheet" />
   </head>
 
-  <body class="container">
-    <div class="">
-      <!-- <img src="static/spotifyjourneyjamslogo.png" /> -->
-    </div>
-    <div class="carplay">
-      <div class="content-container">
-        <div class="content">
-          <form id="searchForm" class="form-box">
-            <div class="info-box">
-              <h2 class=""> <%= duration %> </h2>
-              <h3 class="" style="opacity:70%;"><%= distance %></h3>
-              <div class="creativity">
+  <body class="">
+    <div class="container">
+      <div class="carplay">
+        <div class="content-container">
+          <div class="content">
+            <form id="searchForm" class="form-box">
+              <div class="info-box">
+                <h2 class=""><%= duration %></h2>
+                <h3 class="" style="opacity: 70%"><%= distance %></h3>
+                <div class="creativity">
+                  <input
+                    type="range"
+                    id="creativitySlider"
+                    name="creativity"
+                    min="1"
+                    max="10"
+                    value="5"
+                    class=""
+                  />
+                </div>
+              </div>
+              <div class="radioSearch">
                 <input
-                  type="range"
-                  id="creativitySlider"
-                  name="creativity"
-                  min="1"
-                  max="10"
-                  value="5"
-                  class=""
+                  type="radio"
+                  id="searchByArtist"
+                  name="searchType"
+                  value="artist"
+                  checked
+                />
+                <input
+                  type="radio"
+                  id="searchBySong"
+                  name="searchType"
+                  value="song"
+                />
+                <label for="searchByArtist" id="byArtistLabel"> Artist </label>
+                <label for="searchBySong" id="bySongLabel"> Song </label>
+                <div class="radioSlider"></div>
+              </div>
+              <div class="searchTerm">
+                <input
+                  type="text"
+                  id="searchTerm"
+                  name="searchTerm"
+                  placeholder="Enter search term"
+                  required=""
                 />
               </div>
-            </div>
-            <div class="radioSearch">
-              <input
-                type="radio"
-                id="searchByArtist"
-                name="searchType"
-                value="artist"
-                checked
-              />
-              <input
-                type="radio"
-                id="searchBySong"
-                name="searchType"
-                value="song"
-              />
-              <label for="searchByArtist" id="byArtistLabel"> Artist </label>
-              <label for="searchBySong" id="bySongLabel"> Song </label>
-              <div class="radioSlider"></div>
-            </div>
-            <div class="searchTerm">
-              <input
-                type="text"
-                id="searchTerm"
-                name="searchTerm"
-                placeholder="Enter search term"
-                required=""
-              />
-            </div>
-            <button
-              id="submit"
-              type="button"
-              onclick="submitForm()"
-              class="minimal-button"
-            >
-              Search
-            </button>
-            <button
-              id="continue"
-              type="button"
-              onclick="makePlaylist()"
-              style="display: none"
-              class="minimal-button"
-            >
-              Make Playlist!
-            </button>
-          </form>
-        </div>
+              <button
+                id="submit"
+                type="button"
+                onclick="submitForm()"
+                class="minimal-button"
+              >
+                Search
+              </button>
+              <button
+                id="music-button"
+                type="button"
+                onclick="makePlaylist()"
+                style="display: none"
+                class="minimal-button"
+              >
+                Make Playlist!
+              </button>
+            </form>
+          </div>
 
-        <div
-          id="result-container"
-          class="content invisible list"
-        ></div>
+          <div id="result-container" class="content invisible list"></div>
+        </div>
       </div>
     </div>
   </body>
@@ -125,7 +121,9 @@
         console.log("Received data from server:", data);
 
         updateResult(data);
-        document.getElementById("result-container").classList.remove("invisible");
+        document
+          .getElementById("result-container")
+          .classList.remove("invisible");
         document.getElementById("submit").disabled = false;
       } else {
         console.error("Error submitting form:", response.statusText);
@@ -133,17 +131,14 @@
       }
     }
 
-
-
     let selection = null; // Variable to store the selected URI
     function updateResult(data) {
       selection = null;
-      const continueButton = document.getElementById("continue");
+      const continueButton = document.getElementById("music-button");
       continueButton.style.display = "none";
       results = document.getElementById("result-container");
       response = data.search;
-      let search =
-        "<table class='table'>";
+      let search = "<table class='table'>";
 
       if (initialSearchType == "artist") {
         for (let i in response) {
@@ -187,7 +182,7 @@
             URI +
             "'class='rowClass' style='display: none;'>" +
             "<td colspan='4' class='songsShown leftBorderRad rightBorderRad'><div id='output" +
-            URI + 
+            URI +
             "' class=''></div></td>" +
             "</tr>";
         }
@@ -229,7 +224,7 @@
       }
 
       search +=
-        '</table><button id="submit" type="button" onclick="nextPage()" class="minimal-button"> Next Page </button>';
+        '<tr class="rowClass"><td colspan="4" class="leftBorderRad rightBorderRad"><button id="continue" type="button" onclick="nextPage()" class="minimal-button"> Next Page </button></td></tr></table>';
       results.innerHTML = search;
     }
 
@@ -239,8 +234,8 @@
       const button = document.getElementById("findSongs" + artistId);
 
       button.disabled = true;
-      button.style.cursor = 'default';
-      button.style.transform = 'rotate(90deg)';
+      button.style.cursor = "default";
+      button.style.transform = "rotate(90deg)";
 
       outputRow.style.display = "table-row"; // Hide output row
 
@@ -308,21 +303,40 @@
     // Global function for handling row clicks
     function handleRowClick(row) {
       // Clear previous selection if any
-      const continueButton = document.getElementById("continue");
+      const continueButton = document.getElementById("music-button");
 
       if (selection) {
         const previousSelectionRow = document.getElementById(selection);
-        previousSelectionRow.removeAttribute('style');
+        previousSelectionRow.removeAttribute("style");
       }
 
       // Set the new selection
       selection = row.id;
 
+      // Find the artist icon within the clicked row
+      const artistIcon = row.querySelector(".artistIcon");
+      if (artistIcon) {
+        const imageUrl = artistIcon.src;
 
-      row.style.backgroundColor = '#252a2cef';
-      row.style.cursor = 'default';
+        // Preload the new image
+        const img = new Image();
+        img.src = imageUrl;
 
-      continueButton.removeAttribute('style');
+        img.onload = () => {
+        
+          // Image loaded, apply the background image
+          const container = document.querySelector(".container");
+          container.style.setProperty(
+            "--background-image",
+            `url('${imageUrl}')`,
+          );
+        };
+      }
+
+      row.style.backgroundColor = "#252a2cef";
+      row.style.cursor = "default";
+
+      continueButton.removeAttribute("style");
     }
 
     async function makePlaylist() {
