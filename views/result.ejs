@@ -16,6 +16,12 @@
               <h3 class="" style="opacity: 70%"><%= distance %></h3>
             </div>
           </div>
+          <div class="content " id="loading-container">
+            <div class="form-box">
+              <img src="/static/van.webp" id="vanimg">
+              <img src="/static/earth.webp" id="earthimg">
+            </div>
+          </div>
           <div class="content invisible" id="result-container">
             <div id="playlist" class=""></div>
           </div>
@@ -31,23 +37,24 @@
 
         try {
           const data = JSON.parse(event.data);
-          const topBox = document.getElementById("form-box")
-          const resultContainer = document.getElementById("result")
+          const topBox = document.getElementById("loading-container")
+          const resultContainer = document.getElementById("result-container")
 
           if (data.foundSongs) {
-            const listItem = document.createElement("li");
+            const listItem = document.createElement("p");
             listItem.textContent = `Found artists you might like!`;
             topBox.appendChild(listItem);
           }
           if (data.choseSongs) {
-            const listItem = document.createElement("li");
+            const listItem = document.createElement("p");
             listItem.textContent = `Picking out songs for your playlist!`;
             topBox.appendChild(listItem);
           }
           if (data.madePlaylist) {
             
             source.close();
-            resultContainer.classList.add("visible")
+            resultContainer.classList.remove("invisible")
+            topBox.classList.add("invisible")
             const embedContainer = document.getElementById("playlist");
             embedContainer.innerHTML = data.madePlaylist;          }
         } catch (error) {

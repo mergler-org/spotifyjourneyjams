@@ -45,50 +45,39 @@ h3 {
   padding: 10px;
 }
 
-.container {
-  position: relative;
+.carplay {
+  margin: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 800px;
-  margin: 50px;
+  background-color: transparent;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-lg */
+  flex-direction: row;
   border-radius: 30px;
-  overflow: hidden; /* Ensure the pseudo-element does not overflow */
-  min-height: 70vh;
-  transition: all 0.3s ease-in-out;
+  min-height: 500px;
+  transition: all 1s ease-in-out;
+  width: 800px;
+  position: relative; /* Add this to ensure the ::before pseudo-element is positioned correctly */
+  overflow: hidden; /* Prevent the pseudo-element from spilling out */
 }
 
-.container::before {
+.carplay::before {
   content: "";
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%; /* Ensure it matches the height of the container */
-  background-color: #4ffd6c; 
+  background-color: #c4f3a5; 
   background-image: var(--background-image); /* Use the CSS custom property for the background image */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   z-index: -1;
-  border-radius: 30px; /* Match the border-radius of the container */
   filter: blur(20px);
-  transition: all 1s ease-in-out;
+  clip-path: inset(0); /* Constrain the blur effect within the container */
 }
 
-.carplay {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #6b6b6bbd;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-lg */
-  flex-direction: row;
-  border-radius: 30px;
-  min-height: 70vh;
-  transition: all 0.3s ease-in-out;
-  width: 100%;
-}
 
 
 
@@ -97,7 +86,9 @@ h3 {
   width: 85%;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease-in-out;
+  transition: all 1s ease-in-out;
+  gap: 50px;
+  padding: 50px;
 }
 
 .content {
@@ -105,12 +96,11 @@ h3 {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-color: #252a2cc7;
-  margin: 30px;
+  background-color: #252a2cab;
   padding: 20px;
   border-radius: 32px;
   max-height: 90%;
-  transition: top 0.5s ease; /* Smooth transition for top */
+  transition: all 1s ease; /* Smooth transition for top */
   position: relative;
 }
 
@@ -228,9 +218,7 @@ h3 {
   color: #bfdbfe; 
 }
 
-.invisible {
-  visibility: hidden;
-}
+
 
 #result {
   color: aliceblue;
@@ -245,19 +233,27 @@ h3 {
 #result-container {
   max-height: 0;
   opacity: 0;
-  transition: all 0.3s ease-in-out;
+  transition: all 1s ease-in-out;
 }
 
 #result-container:not(.invisible) {
+  max-height: 200vh;
+  opacity: 1;
+  /* overflow-y: scroll; */
+}
+
+#loading-container {
+  max-height: 0;
+  opacity: 0;
+  transition: all 1s ease-in-out;
+  margin: 0;
+}
+
+#loading-container:not(.invisible) {
   max-height: none;
   opacity: 1;
 }
 
-#result-container.invisible {
-  max-height: 0;
-  opacity: 0;
-  margin: 0;
-}
 
 .radioSearch {
   position: relative;
@@ -332,7 +328,6 @@ h3 {
 }
 
 #result-container.list {
-  padding: 0px;
   background-color: transparent;
 }
 
@@ -344,7 +339,6 @@ h3 {
 .table {
   width: 100%;
   border-spacing: 0 3px;
-  padding: 15px;
 }
 
 #topSong {
@@ -392,6 +386,39 @@ button.showSongsSVG {
   transition: all 0.4s ease;
 }
 
+#earthimg {
+  display: block;
+  margin: auto;
+  height: 50%;
+  width: 50%;
+  animation: spin 10s linear infinite;
+  z-index: 0;
+}
+
+#vanimg {
+  position: absolute;
+  top: 0;
+  left: 35%;
+  animation: bounce 1s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(20px); }
+}
+
 .nopadding {
   padding: 0;
+}
+
+.attribution {
+  text-decoration: none;
+  padding: 20px;
+  color: white;
 }
