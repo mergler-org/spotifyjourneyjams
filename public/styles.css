@@ -45,6 +45,7 @@ h3 {
   padding: 10px;
 }
 
+
 .carplay {
   margin: 50px;
   display: flex;
@@ -55,7 +56,7 @@ h3 {
   flex-direction: row;
   border-radius: 30px;
   min-height: 500px;
-  transition: all 1s ease-in-out;
+  transition: all 2s ease-in-out;
   width: 800px;
   position: relative; /* Add this to ensure the ::before pseudo-element is positioned correctly */
   overflow: hidden; /* Prevent the pseudo-element from spilling out */
@@ -68,7 +69,7 @@ h3 {
   left: 0;
   width: 100%;
   height: 100%; /* Ensure it matches the height of the container */
-  background-color: #c4f3a5; 
+  background-color: #b9eb94; 
   background-image: var(--background-image); /* Use the CSS custom property for the background image */
   background-size: cover;
   background-position: center;
@@ -76,10 +77,9 @@ h3 {
   z-index: -1;
   filter: blur(20px);
   clip-path: inset(0); /* Constrain the blur effect within the container */
+  transition: all 2s ease-in-out;
+
 }
-
-
-
 
 .content-container {
   height: 100%;
@@ -96,7 +96,8 @@ h3 {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-color: #252a2cab;
+  background-color: #252a2cbd;
+  backdrop-filter: blur(20px);
   padding: 20px;
   border-radius: 32px;
   max-height: 90%;
@@ -234,13 +235,20 @@ h3 {
   max-height: 0;
   opacity: 0;
   transition: all 1s ease-in-out;
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+#result-container::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
 }
 
 #result-container:not(.invisible) {
   max-height: 200vh;
   opacity: 1;
-  /* overflow-y: scroll; */
+  overflow-y: scroll;
 }
+
 
 #loading-container {
   max-height: 0;
@@ -349,7 +357,9 @@ h3 {
   padding: 15px;
   transition: all 0.4s ease;
   cursor: pointer;
-  background-color: #252a2cc7;
+  background-color: #252a2cbd;
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
 }
 
 td {
