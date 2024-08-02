@@ -22,7 +22,7 @@
               <img src="/static/earth.webp" id="earthimg">
             </div>
           </div>
-          <div class="content invisible" id="result-container">
+          <div class="content invisible" id="playlist">
             <div id="playlist" class=""></div>
           </div>
         </div>
@@ -38,7 +38,7 @@
         try {
           const data = JSON.parse(event.data);
           const topBox = document.getElementById("loading-container")
-          const resultContainer = document.getElementById("result-container")
+          const resultContainer = document.getElementById("playlist")
 
           if (data.foundSongs) {
             const listItem = document.createElement("p");
@@ -54,7 +54,7 @@
             
             source.close();
             resultContainer.classList.remove("invisible")
-            topBox.classList.add("invisible")
+            topBox.style.display = "none";
             const embedContainer = document.getElementById("playlist");
             embedContainer.innerHTML = data.madePlaylist;          }
         } catch (error) {
