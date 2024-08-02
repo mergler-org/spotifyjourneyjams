@@ -22,58 +22,87 @@ html,
   color: white;
 }
 
+@view-transition {
+  navigation: auto;
+}
+
 body {
   margin: 0;
   /* 1 */
   line-height: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   /* 2 */
   /* height: 100vh; */
 }
 
-h1, h2 {
+h1,
+h2,
+h3 {
   margin: 0px;
+  align-content: end;
+  padding: 10px;
 }
 
-.container {
+
+.carplay {
+  margin: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
-}
-
-.carplay {
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  background-color: #28282b; /* Equivalent to bg-slate-100 */
+  background-color: transparent;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-lg */
   flex-direction: row;
-  overflow: hidden;
-  margin: 50px;
+  border-radius: 30px;
+  min-height: 500px;
+  transition: all 2s ease-in-out;
   width: 800px;
-  border-radius: 32px;
-  height: auto; 
-  /* height: 500px; */
+  position: relative; /* Add this to ensure the ::before pseudo-element is positioned correctly */
+  overflow: hidden; /* Prevent the pseudo-element from spilling out */
+}
+
+.carplay::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* Ensure it matches the height of the container */
+  background-color: #97bc7b; 
+  background-image: var(--background-image); /* Use the CSS custom property for the background image */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+  filter: blur(20px);
+  clip-path: inset(0); /* Constrain the blur effect within the container */
+  transition: all 2s ease-in-out;
+
 }
 
 .content-container {
-  background-color: #91bd98; /* Equivalent to bg-gray-800 */
   height: 100%;
   width: 85%;
   display: flex;
   flex-direction: column;
+  transition: all 1s ease-in-out;
+  gap: 50px;
+  padding: 50px;
 }
 
 .content {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: row;
-  background-color: #28282b;
-  margin: 30px;
+  flex-direction: column;
+  background-color: #252a2cbd;
+  backdrop-filter: blur(20px);
   padding: 20px;
   border-radius: 32px;
-  max-height: 50%;
+  max-height: 90%;
+  transition: all 1s ease; /* Smooth transition for top */
+  position: relative;
 }
 
 .form-box {
@@ -84,6 +113,7 @@ h1, h2 {
   width: 100%;
 }
 
+/* Base styling */
 .startingPoint,
 .destination,
 .searchTerm,
@@ -92,16 +122,16 @@ h1, h2 {
   display: flex;
   flex-direction: row;
   align-items: center;
-  background-color: #4a5568;
-  border-radius: 12px;
+  background-color: #0000006e;
+  border-radius: 20px;
   border: none;
-  height: 40px;
+  height: 33%;
 }
 
 .startingPoint input,
 .destination input,
 .searchTerm input {
-  background-color: transparent; /* Equivalent to bg-gray-700 */
+  background-color: transparent;
   color: white;
   width: 90%;
   outline: none; /* Ensures no outline on focus */
@@ -110,6 +140,24 @@ h1, h2 {
   border: none;
 }
 
+/* Autofill styling */
+.startingPoint input:-webkit-autofill,
+.destination input:-webkit-autofill,
+.searchTerm input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.startingPoint input:-webkit-autofill:focus,
+.destination input:-webkit-autofill:focus,
+.searchTerm input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Specific border-radius adjustments */
 .startingPoint {
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
@@ -121,19 +169,19 @@ h1, h2 {
 }
 
 ::placeholder {
-  color: #91a1bd;
+  color: #b0b1b3;
 }
 
-#location {
+.locationsvg {
   margin: 10px;
-  height: 50%;
+  max-height: 30px;
   width: auto;
-  fill: #91a1bd;
+  fill: #b0b1b3;
+  stroke: #b0b1b3;
   cursor: pointer;
 }
 
 .minimal-button {
-  margin-top: 15px;
   padding: 5px;
   width: 100%;
   cursor: pointer;
@@ -146,58 +194,92 @@ h1, h2 {
   background-color: transparent;
   transition: all 0.4s ease;
   text-decoration: none;
-
 }
 
 #submit {
-  color: #60a5fa; /* Equivalent to text-green-400 */
+  margin-top: 15px;
+  color: #60a5fa; 
 }
 #submit:hover {
-  color: #bfdbfe; /* Equivalent to hover:text-green-200 */
+  color: #bfdbfe; 
 }
 #music-button {
-  color: #68d391; /* Equivalent to text-green-400 */
+  margin-top: 15px;
+  color: #68d391; 
 }
 #music-button:hover {
-  color: #9ae6b4; /* Equivalent to hover:text-green-200 */
+  color: #9ae6b4; 
 }
 #continue {
-  color: #68d391; /* Equivalent to text-green-400 */
+  border-bottom: none;
+  border-top: none;
+  color: #60a5fa; 
 }
-#continue:hover{
-  color: #9ae6b4; /* Equivalent to hover:text-green-200 */
-}
-
-.invisible {
-  visibility: hidden;
+#continue:hover {
+  color: #bfdbfe; 
 }
 
-.smaller {
-  font-size: large;
+
+
+#result {
+  color: aliceblue;
+  position: relative;
+  font-size: medium;
   margin-top: auto;
   margin-bottom: auto;
   padding: 0px;
   width: 100%;
 }
 
-#result {
-  color: aliceblue;
-  visibility: hidden; /* Initially invisible */
-  position: relative;
-  top: 1000px; /* Start position below */
-  transition: top 0.5s ease; /* Smooth transition for top */
-  margin-top: 0px;
-  margin-bottom: 40px;
+#result-container {
+  max-height: 0;
+  opacity: 0;
+  transition: all 1s ease-in-out;
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
 }
 
-#result.visible {
-  visibility: visible; /* Make visible when the 'visible' class is applied */
-  top: 0; /* Move up to its original position */
+#result-container::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+#result-container:not(.invisible) {
+  max-height: 200vh;
+  opacity: 1;
+  overflow-y: scroll;
+}
+
+
+#loading-container {
+  max-height: 0;
+  opacity: 0;
+  transition: all 1s ease-in-out;
+  margin: 0;
+}
+
+#loading-container:not(.invisible) {
+  max-height: none;
+  opacity: 1;
+}
+
+#playlist {
+  max-height: 0;
+  opacity: 0;
+  transition: all 1s ease-in-out;
+  margin: 0;
+}
+
+#playlist:not(.invisible) {
+  max-height: none;
+  opacity: 1;
 }
 
 .radioSearch {
   position: relative;
   margin: 20px;
+  height: 33%;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .radioSearch > * {
@@ -213,7 +295,7 @@ h1, h2 {
   cursor: pointer;
   min-width: 50%;
   text-align: center;
-  color: #91a1bd;
+  color: #b0b1b3;
   -webkit-transition: all 0.4s ease;
   -moz-transition: all 0.4s ease;
   -o-transition: all 0.4s ease;
@@ -227,7 +309,7 @@ h1, h2 {
   height: 100%;
   position: absolute;
   top: 0px;
-  border-radius: 12px;
+  border-radius: 20px;
   -webkit-transition: all 0.4s ease;
   -moz-transition: all 0.4s ease;
   -o-transition: all 0.4s ease;
@@ -264,18 +346,18 @@ h1, h2 {
   padding-left: 50px;
 }
 
+#result-container.list {
+  background-color: transparent;
+}
+
 .list {
   max-height: max-content;
   flex-direction: column;
-  padding: 30px;
 }
 
 .table {
   width: 100%;
-  border-collapse: collapse;
-  border-spacing: 30px;
-  padding: 15px;
-  border-radius: 20px;
+  border-spacing: 0 3px;
 }
 
 #topSong {
@@ -283,10 +365,12 @@ h1, h2 {
 }
 
 .rowClass {
-  /* background-color: #4a5568; */
   padding: 15px;
   transition: all 0.4s ease;
   cursor: pointer;
+  background-color: #252a2cbd;
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
 }
 
 td {
@@ -294,7 +378,7 @@ td {
 }
 
 .rowClass:hover {
-  background: #818896;
+  background: #252a2cef;
 }
 
 .leftBorderRad {
@@ -308,12 +392,12 @@ td {
 }
 
 
+
 .artistIcon {
   height: 70px;
   width: 70px;
   border-radius: 50%;
 }
-
 
 button.showSongsSVG {
   background-color: transparent;
@@ -323,6 +407,39 @@ button.showSongsSVG {
   transition: all 0.4s ease;
 }
 
+#earthimg {
+  display: block;
+  margin: auto;
+  height: 50%;
+  width: 50%;
+  animation: spin 5s linear infinite;
+  z-index: 0;
+}
+
+#vanimg {
+  position: absolute;
+  top: -15%;
+  left: 35%;
+  animation: bounce 1s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(20px); }
+}
+
 .nopadding {
   padding: 0;
+}
+
+.attribution {
+  text-decoration: none;
+  padding: 20px;
+  color: white;
 }

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Spotify Journey</title>
+    <link href="./styles.css" rel="stylesheet" />
+  </head>
+
+  <body class="">
+    <div class="container">
+      <div class="carplay">
+        <div class="content-container">
+          <div class="content">
+            <div class="form-box">
+              <h2 class=""><%= duration %></h2>
+              <h3 class="" style="opacity: 70%"><%= distance %></h3>
+            </div>
+          </div>
+          <div class="content " id="loading-container">
+            <div class="form-box">
+              <img src="/static/van.webp" id="vanimg">
+              <img src="/static/earth.webp" id="earthimg">
+            </div>
+          </div>
+          <div class="content invisible" id="playlist">
+            <div id="playlist" class=""></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const source = new EventSource("/stream");
+
+      source.addEventListener("message", (event) => {
+        console.log("received: ", event);
+
+        try {
+          const data = JSON.parse(event.data);
+          const topBox = document.getElementById("loading-container")
+          const resultContainer = document.getElementById("playlist")
+
+          if (data.foundSongs) {
+            const listItem = document.createElement("p");
+            listItem.textContent = `Found artists you might like!`;
+            topBox.appendChild(listItem);
+          }
+          if (data.choseSongs) {
+            const listItem = document.createElement("p");
+            listItem.textContent = `Picking out songs for your playlist!`;
+            topBox.appendChild(listItem);
+          }
+          if (data.madePlaylist) {
+            
+            source.close();
+            resultContainer.classList.remove("invisible")
+            topBox.style.display = "none";
+            const embedContainer = document.getElementById("playlist");
+            embedContainer.innerHTML = data.madePlaylist;          }
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          source.close();
+        }
+      });
+    </script>
+  </body>
+</html>

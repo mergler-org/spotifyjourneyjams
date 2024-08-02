@@ -1,5 +1,5 @@
 const express = require("express");
-const axios = require('axios');
+const axios = require("axios");
 const SpotifyWebApi = require("spotify-web-api-node");
 const path = require("path");
 require("dotenv").config();
@@ -47,9 +47,9 @@ app.set("views", path.join(__dirname, "views"));
 app.use(cookieParser());
 
 app.use((req, res, next) => {
-  res.setHeader('Cache-Control', 'no-cache, no-store');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
+  res.setHeader("Cache-Control", "no-cache, no-store");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
   next();
 });
 const sessionMiddleware = session({
@@ -142,11 +142,11 @@ app.post("/geocoding", async (req, res) => {
   try {
     req.session.startingPointData = await geocode(
       startingPoint,
-      MAPBOX_ACCESS_TOKEN
+      MAPBOX_ACCESS_TOKEN,
     );
     req.session.destinationData = await geocode(
       destination,
-      MAPBOX_ACCESS_TOKEN
+      MAPBOX_ACCESS_TOKEN,
     );
   } catch (error) {
     console.error("Error geocoding \n", error.message);
@@ -159,7 +159,7 @@ app.post("/geocoding", async (req, res) => {
     var { duration, distance, errorMessage } = await drivingTraffic(
       req.session.startingPointData.coordinates,
       req.session.destinationData.coordinates,
-      MAPBOX_ACCESS_TOKEN
+      MAPBOX_ACCESS_TOKEN,
     );
 
     req.session.duration = duration;
@@ -258,7 +258,7 @@ app.post("/saveInfo", spotifyApiMiddleware, async (req, res) => {
 
 app.get("/playlist", spotifyApiMiddleware, async (req, res) => {
   try {
-    res.render("loading");
+    res.render("result");
   } catch (error) {
     console.error("Error during loading:", error);
     res.status(500).json({ error: "Internal Server Error on loading screen" });
@@ -266,12 +266,12 @@ app.get("/playlist", spotifyApiMiddleware, async (req, res) => {
 });
 
 const PlaylistState = {
-  INIT: 'INIT',
-  COLLECTING_SONGS: 'COLLECTING_SONGS',
-  PICKING_SONGS: 'PICKING_SONGS',
-  CREATING_PLAYLIST: 'CREATING_PLAYLIST',
-  ADDING_SONGS: 'ADDING_SONGS',
-  COMPLETE: 'COMPLETE'
+  INIT: "INIT",
+  COLLECTING_SONGS: "COLLECTING_SONGS",
+  PICKING_SONGS: "PICKING_SONGS",
+  CREATING_PLAYLIST: "CREATING_PLAYLIST",
+  ADDING_SONGS: "ADDING_SONGS",
+  COMPLETE: "COMPLETE",
 };
 
 async function handlePlaylistCreation(req, res) {
@@ -292,6 +292,7 @@ async function handlePlaylistCreation(req, res) {
         req.session.playlist = {};
         req.session.playlistState = PlaylistState.COLLECTING_SONGS;
         // Fall through to collect songs
+
       case PlaylistState.COLLECTING_SONGS:
         console.log("Getting song list");
         const initialSongList = await collectSongList(
@@ -299,20 +300,25 @@ async function handlePlaylistCreation(req, res) {
           req.session.creativityParameters,
           req.session.selection,
           req.session.searchType,
-          duration
+          duration,
         );
         res.write(`data: ` + JSON.stringify({ foundSongs: true }) + `\n\n`);
-        req.session.playlist.songList = await pickSongs(duration, initialSongList);
+        req.session.playlist.songList = await pickSongs(
+          duration,
+          initialSongList,
+        );
         req.session.playlistState = PlaylistState.PICKING_SONGS;
         // Fall through to pick songs
+
       case PlaylistState.PICKING_SONGS:
         const chunk = JSON.stringify({ choseSongs: true });
         res.write(`data: ${chunk}\n\n`);
         req.session.playlistState = PlaylistState.CREATING_PLAYLIST;
         // Fall through to create playlist
+
       case PlaylistState.CREATING_PLAYLIST:
         const trackIds = req.session.playlist.songList.map(
-          (track) => "spotify:track:" + track.id
+          (track) => "spotify:track:" + track.id,
         );
         console.log(trackIds);
 
@@ -328,47 +334,54 @@ async function handlePlaylistCreation(req, res) {
         req.session.playlist.playlistData = roadTripPlaylist;
         req.session.playlistState = PlaylistState.ADDING_SONGS;
         // Fall through to add songs
+
       case PlaylistState.ADDING_SONGS:
         const trackUris = req.session.playlist.songList.map(
-          (track) => "spotify:track:" + track.id
+          (track) => "spotify:track:" + track.id,
         );
-        await addToPlaylist(spotifyApi, trackUris, req.session.playlist.playlistData.body.id);
+        await addToPlaylist(
+          spotifyApi,
+          trackUris,
+          req.session.playlist.playlistData.body.id,
+        );
         req.session.playlistState = PlaylistState.COMPLETE;
         // Fall through to complete
+
       case PlaylistState.COMPLETE:
-        const playlistLinkURL = req.session.playlist.playlistData.body.external_urls.spotify;
+        const playlistLinkURL =
+          req.session.playlist.playlistData.body.external_urls.spotify;
         const oembedUrl = `https://open.spotify.com/oembed?url=${playlistLinkURL}`;
         const response = await axios.get(oembedUrl);
         const embedHtml = response.data.html;
 
         const playlistChunk = JSON.stringify({ madePlaylist: embedHtml });
         res.write(`data: ${playlistChunk}\n\n`);
-        
+
         delete req.session.playlist;
         delete req.session.playlistState;
         res.end();
         break;
+
+      default:
+        throw new Error("Unknown playlist state");
     }
   } catch (error) {
     console.error("Error handling playlist creation:", error.message);
-    res.status(500).send("Internal Server Error");
+    if (!res.headersSent) {
+      res.status(500).send("Internal Server Error");
+    }
+  } finally {
+    res.on("close", () => {
+      if (!res.headersSent) {
+        delete req.session.playlist;
+        delete req.session.playlistState;
+        res.end();
+      }
+    });
   }
-
-  res.on("close", () => {
-    delete req.session.playlist;
-    delete req.session.playlistState;
-    res.end();
-  });
 }
 
 app.get("/stream", spotifyApiMiddleware, handlePlaylistCreation);
-
-
-app.get("/results", spotifyApiMiddleware, async (req, res) => {
-  playlistDetails = req.session.playlist.playlistData;
-  console.log(playlistDetails);
-  res.render("results", {});
-});
 
 // Start the server
 app.listen(port, () => {
