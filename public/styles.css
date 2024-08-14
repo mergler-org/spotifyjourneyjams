@@ -344,6 +344,7 @@ h3 {
   align-content: center;
   justify-content: center;
   padding-left: 50px;
+  width: 100%;
 }
 
 #result-container.list {

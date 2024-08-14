@@ -15,17 +15,6 @@
               <div class="info-box">
                 <h2 class=""><%= duration %></h2>
                 <h3 class="" style="opacity: 70%"><%= distance %></h3>
-                <div class="creativity">
-                  <input
-                    type="range"
-                    id="creativitySlider"
-                    name="creativity"
-                    min="1"
-                    max="10"
-                    value="5"
-                    class=""
-                  />
-                </div>
               </div>
               <div class="radioSearch">
                 <input
@@ -80,25 +69,23 @@
     </div>
   </body>
   <script>
-    let initialSearchType, initialSearchTerm, initialCreativity, offset;
+    let initialSearchType, initialSearchTerm, offset;
 
     async function submitForm() {
       document.getElementById("submit").disabled = true;
-      const creativity = document.getElementById("creativitySlider").value;
       const searchType = document.getElementById("searchByArtist").checked
         ? "artist"
         : "song";
       const searchTerm = document.getElementById("searchTerm").value;
 
-      console.log("Submitting form with:", searchType, searchTerm, creativity);
+      console.log("Submitting form with:", searchType, searchTerm);
 
       offset = 0;
 
       // Compare with initial values and return if no changes
       if (
         searchType === initialSearchType &&
-        searchTerm === initialSearchTerm &&
-        creativity === initialCreativity
+        searchTerm === initialSearchTerm
       ) {
         console.log("Form values unchanged. Aborting form submission.");
         document.getElementById("submit").disabled = false;
@@ -109,10 +96,9 @@
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ searchType, searchTerm, creativity, offset }),
+        body: JSON.stringify({ searchType, searchTerm, offset }),
       });
       // Update initial values only after a successful submission
-      initialCreativity = creativity;
       initialSearchTerm = searchTerm;
       initialSearchType = searchType;
 
@@ -139,6 +125,21 @@
       results = document.getElementById("result-container");
       response = data.search;
       let search = "<table class='table'>";
+      search += `<tr class="rowClass"><td colspan="2" class="leftBorderRad">
+                <div class="creatlabel">Use my recommendations?</div>
+                </td>
+                <td colspan="2" class="rightBorderRad">
+                <div class="creativity">
+                  <input
+                    type="range"
+                    id="creativitySlider"
+                    name="creativity"
+                    min="1"
+                    max="10"
+                    value="5"
+                    class=""
+                  />
+                </div></td></tr>`;
 
       if (initialSearchType == "artist") {
         for (let i in response) {
@@ -323,7 +324,6 @@
         img.src = imageUrl;
 
         img.onload = () => {
-        
           // Image loaded, apply the background image
           const container = document.querySelector(".carplay");
           container.style.setProperty(
@@ -345,6 +345,8 @@
         return;
       }
 
+      const creativity = document.getElementById("creativitySlider").value;
+
       const response = await fetch("/saveInfo", {
         method: "POST",
         headers: {
@@ -353,7 +355,7 @@
         body: JSON.stringify({
           selection,
           searchType: initialSearchType,
-          creativity: initialCreativity,
+          creativity: creativity,
         }),
       });
 
