@@ -82,9 +82,11 @@ h3 {
 }
 
 .sidebar {
-  background-color: #05051a;
-  width: 20px;
-  height: 100%;
+  background-color: #252a2cbd;
+  backdrop-filter: blur(20px);
+  width: 80px;
+  align-self: stretch;
+  flex-shrink: 0;
 }
 
 .content-container {
