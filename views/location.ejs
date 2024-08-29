@@ -6,9 +6,17 @@
     <link href="./styles.css" rel="stylesheet" />
   </head>
 
-  <body class="">
+  <body onload="startTime()" class="">
     <div class="">
       <div class="carplay">
+        <div class="sidebar">
+          <div id="clock"></div>
+          <div id="sidebarApps">
+            <a href="https://open.spotify.com"
+              ><img id="spotifyApp" src="static/Spotify_Icon_RGB_Green.png"
+            /></a>
+          </div>
+        </div>
         <div class="content-container">
           <div class="content">
             <form id="inputs" class="form-box">
@@ -84,7 +92,9 @@
                       id="Shape"
                     ></path></svg></a
                 >,
-                <a style="text-decoration: none;" href="http://www.openstreetmap.org/copyright"
+                <a
+                  style="text-decoration: none"
+                  href="http://www.openstreetmap.org/copyright"
                   >OpenStreetMap</a
                 >
               </div>
@@ -103,6 +113,13 @@
       </div>
     </div>
     <script>
+      function startTime() {
+        const today = new Date();
+        let h = today.getHours();
+        let m = today.getMinutes();
+        document.getElementById("clock").innerHTML = h + ":" + m;
+        setTimeout(startTime, 60000);
+      }
       let initialStartingPoint;
       let initialDestination;
 
