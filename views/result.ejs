@@ -6,8 +6,16 @@
     <link href="./styles.css" rel="stylesheet" />
   </head>
 
-  <body class="">
+  <body onload="startTime()" class="">
     <div class="container">
+      <div class="sidebar">
+        <div id="clock"></div>
+        <div id="sidebarApps">
+          <a href="https://open.spotify.com"
+            ><img id="spotifyApp" src="static/Spotify_Icon_RGB_Green.png"
+          /></a>
+        </div>
+      </div>
       <div class="carplay">
         <div class="content-container">
           <div class="content">
@@ -16,10 +24,10 @@
               <h3 class="" style="opacity: 70%"><%= distance %></h3>
             </div>
           </div>
-          <div class="content " id="loading-container">
+          <div class="content" id="loading-container">
             <div class="form-box">
-              <img src="/static/van.webp" id="vanimg">
-              <img src="/static/earth.webp" id="earthimg">
+              <img src="/static/van.webp" id="vanimg" />
+              <img src="/static/earth.webp" id="earthimg" />
             </div>
           </div>
           <div class="content invisible" id="playlist">
@@ -30,6 +38,14 @@
     </div>
 
     <script>
+      function startTime() {
+        const today = new Date();
+        let h = today.getHours();
+        let m = today.getMinutes();
+        document.getElementById("clock").innerHTML = h + ":" + m;
+        setTimeout(startTime, 60000);
+      }
+
       const source = new EventSource("/stream");
 
       source.addEventListener("message", (event) => {
@@ -37,8 +53,8 @@
 
         try {
           const data = JSON.parse(event.data);
-          const topBox = document.getElementById("loading-container")
-          const resultContainer = document.getElementById("playlist")
+          const topBox = document.getElementById("loading-container");
+          const resultContainer = document.getElementById("playlist");
 
           if (data.foundSongs) {
             const listItem = document.createElement("p");
@@ -51,12 +67,12 @@
             topBox.appendChild(listItem);
           }
           if (data.madePlaylist) {
-            
             source.close();
-            resultContainer.classList.remove("invisible")
+            resultContainer.classList.remove("invisible");
             topBox.style.display = "none";
             const embedContainer = document.getElementById("playlist");
-            embedContainer.innerHTML = data.madePlaylist;          }
+            embedContainer.innerHTML = data.madePlaylist;
+          }
         } catch (error) {
           console.error("Error parsing JSON:", error);
           source.close();

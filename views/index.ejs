@@ -5,9 +5,17 @@
     <link href="./styles.css" rel="stylesheet" />
   </head>
 
-  <body>
+  <body onload="startTime()">
     <div class="container">
       <div class="carplay">
+        <div class="sidebar">
+          <div id="clock"></div>
+          <div id="sidebarApps">
+            <a href="https://open.spotify.com"
+              ><img id="spotifyApp" src="static/Spotify_Icon_RGB_Green.png"
+            /></a>
+          </div>
+        </div>
         <div class="content-container">
           <div class="content">
             <div class="form-box">
@@ -43,4 +51,13 @@
       </div>
     </div>
   </body>
+  <script>
+    function startTime() {
+      const today = new Date();
+      let h = today.getHours();
+      let m = today.getMinutes();
+      document.getElementById("clock").innerHTML = h + ":" + m;
+      setTimeout(startTime, 60000);
+    }
+  </script>
 </html>

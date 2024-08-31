@@ -205,8 +205,7 @@ app.get("/music", spotifyApiMiddleware, (req, res) => {
 
 app.post("/search", spotifyApiMiddleware, async (req, res) => {
   const spotifyApi = req.spotifyApi;
-  const { searchTerm, searchType, creativity, offset } = req.body;
-  req.session.creativity = creativity;
+  const { searchTerm, searchType, offset } = req.body;
   if (searchType == "artist") {
     const artistList = await searchArtist(spotifyApi, searchTerm, offset);
 
