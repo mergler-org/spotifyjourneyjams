@@ -9,12 +9,14 @@ Spotify Journey Jams makes the perfect length playlist for your driving needs.
 1. Clone the repository
 2. Run `npm install` to install dependencies
 3. Create a `.env` file with:
-    a. CLIENTID=<YourSpotifyClientId>
-    b. CLIENTSECRET=<YourSpotifyClientSecret>
-    c. REDIRECTURI=<YourSpotifyRedirectURI>
-    d. MAPBOX_ACCESS_TOKEN=<YourMapboxAccessToken>
-    e. SESSIONKEY=faoj3q49puy4v2u4tpr89u
-    f. PORT=<YourPortNumber>
+    ```
+    CLIENTID=<YourSpotifyClientId>
+    CLIENTSECRET=<YourSpotifyClientSecret>
+    REDIRECTURI=<YourSpotifyRedirectURI>
+    MAPBOX_ACCESS_TOKEN=<YourMapboxAccessToken>
+    SESSIONKEY=<YourSessionKey>
+    PORT=<YourPortNumber>
+    ```
 4. Run `npm start` to start the server
 
 ### Docker
